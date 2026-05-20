@@ -15,7 +15,7 @@ Retro-Learn/                           ← This repository (xiaolixl/Retro-Learn
 ├── .gitmodules
 │
 ├── SimpRetro4Learn/       ← Engine (git submodule)
-│   └── (Template matching + scoring + beam search)
+│   └── (Template matching + scoring + route planning)
 │
 ├── retro_agent/                       ← Helper scripts
 │   ├── run_retro.py                   ←   Unified CLI (single-step + multi-step)

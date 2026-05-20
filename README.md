@@ -11,7 +11,6 @@ This repository provides an AI agent-compatible SKILL (`retro-learn/SKILL.md`) a
 ```
 Retro-Learn/                           ← This repository (xiaolixl/Retro-Learn)
 ├── README.md                          ← This file
-├── LICENSE
 ├── .gitignore
 ├── .gitmodules
 │
@@ -84,10 +83,30 @@ python retro_agent/run_retro.py -s "CC(=O)C=C(C)C" -k 3 -o test.json
 ```
 
 ---
-
 ## Usage
 
-### Pure Algorithm CLI (no LLM required)
+### 🤖 Use with AI Agent (natural language interface)
+
+The `retro-learn` skill enables AI agents (WorkBuddy, Claude Code, or any LLM with tool-calling ability) to perform retrosynthesis analysis through natural language conversation.
+
+**How it works:**
+
+1. The user describes the target molecule and desired route in natural language (e.g. "Find a 3-step retrosynthesis route for CC(=O)C=C(C)C", or "Find a synthesis route for stillbene from tolune")
+2. The AI agent parses the request — converting chemical names to SMILES, extracting the target SMILES, step count, and any preferred starting materials
+3. The agent runs `run_retro.py` to execute the retrosynthesis calculation (calling the main.py under SimpRetro4Learn)
+4. The agent generates an HTML visualization page with RDKit molecular structures
+5. The agent displays the result and provides a educational interpretation
+
+
+**Claude Code / other AI agents:**
+
+Import the `RetroLearn_SKILL.md` content as a system instruction or custom instruction (you need to rename the SKILL.md). The AI agent will follow the defined workflow to invoke `run_retro.py` and `visualize.py` using its tool-calling capabilities. 
+
+**WorkBuddy:**
+
+Upload `retro-learn/SKILL.md` (packaged as `retro-learn.zip`) to WorkBuddy via **Add Skill → Upload Skill**. Once installed, the skill will automatically activate when the user mentions retrosynthesis-related queries.
+
+### ⚙️Pure Algorithm (no LLM required)
 
 Run single-step retrosynthesis:
 
@@ -102,9 +121,5 @@ Multi-step retrosynthesis:
 ```bash
 python retro_agent/run_retro.py -s "CC(=O)C=C(C)C" --steps 3 -o result.json
 ```
-
-### WorkBuddy Skill
-
-Upload `retro-learn/SKILL.md` (packaged as `retro-learn.zip`) to WorkBuddy via **Add Skill → Upload Skill**. Once installed, the AI agent will automatically detect retrosynthesis-related queries and follow the workflow defined in the skill.
 
 ---

@@ -10,7 +10,7 @@ This repository provides an AI agent-compatible SKILL (`retro-learn/SKILL.md`) a
 
 ```
 Retro-Learn/                           ← This repository (xiaolixl/Retro-Learn)
-├── README.md                         ← This file
+├── README.md                          ← This file
 ├── LICENSE
 ├── .gitignore
 ├── .gitmodules

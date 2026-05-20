@@ -2,7 +2,7 @@
 
 **An AI-agent skill layer on top of the [SimpRetro4Learn](https://github.com/wzhstat/SimpRetro4Learn) retrosynthesis engine.**
 
-This repository provides an AI agent-compatible SKILL (`retro-learn/SKILL.md`) and helper scripts (`retro_agent/`) that enable an AI agent (Claude Code, Codex, WorkBuddy, etc.) to perform retrosynthetic route planning (SimpRetro4Learn/) for organic chemistry target molecules using natural language. The synthetic route search is based on templates customized for Univeristy Organic Chemistry course and is suitable for educational purposes. 
+This repository provides an AI agent-compatible SKILL (`retro-learn/SKILL.md`) and helper scripts (`retro_agent/`) that enable an AI agent (Claude Code, Codex, WorkBuddy, etc.) to perform retrosynthetic route planning (`SimpRetro4Learn`) for organic chemistry target molecules using natural language. The synthetic route search is based on templates customized for Univeristy Organic Chemistry course and is suitable for educational purposes. 
 
 ---
 

@@ -108,23 +108,3 @@ python retro_agent/run_retro.py -s "CC(=O)C=C(C)C" --steps 3 -o result.json
 Upload `retro-learn/SKILL.md` (packaged as `retro-learn.zip`) to WorkBuddy via **Add Skill → Upload Skill**. Once installed, the AI agent will automatically detect retrosynthesis-related queries and follow the workflow defined in the skill.
 
 ---
-
-## License
-
-This repository (skill layer and scripts) is provided under the MIT License.
-
-The submodule engine ([SimpRetro4Learn](https://github.com/wzhstat/SimpRetro4Learn)) is governed by its own license — please refer to its repository for details.
-
----
-
-## Citation
-
-If you use this tool in academic work, please cite the original engine:
-
-```
-@software{SimpRetro4Learn,
-  author = {wzhstat},
-  title = {SimpRetro4Learn},
-  url = {https://github.com/wzhstat/SimpRetro4Learn}
-}
-```

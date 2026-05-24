@@ -32,24 +32,24 @@ retro-learn/                           ← This repository
 ├── .gitignore
 ├── .gitmodules                        ← References SimpRetro4Learn
 │
-├── SimpRetro4Learn/       ← Engine (git submodule)
-│   ├── __init__.py                    ←   ↳ https://github.com/wzhstat/SimpRetro4Learn
-│   ├── retro_engine.py               ←   Template matching + scoring
-│   ├── route_planner.py              ←   Multi-step beam search
-│   ├── main.py                       ←   Standalone engine CLI
-│   ├── name2smiles.py                ←   Molecule name → SMILES
-│   ├── reaction_template.json        ←   Reaction template library (SMARTS)
-│   ├── template_condition.json       ←   Reaction conditions per template
-│   ├── requirements.txt              ←   Engine dependencies
-│   └── emol_*.txt                     ←   Chemical stock databases
+├── SimpRetro4Learn/       ← Engine (git submodule) — data files only
+│   ├── main.py                       ←     Standalone engine CLI (in submodule)
+│   ├── name2smiles.py                ←     Molecule name → SMILES
+│   ├── reaction_template.json        ←     Reaction template library (SMARTS)
+│   ├── template_condition.json       ←     Reaction conditions per template
+│   ├── requirements.txt              ←     Engine dependencies
+│   └── emol_*.txt                     ←     Chemical stock databases
 │
-├── retro_agent/                       ← Helper scripts (invoked by the AI agent)
-│   ├── run_retro.py                   ←   Unified CLI (single-step + multi-step)
-│   ├── visualize.py                   ←   JSON → HTML with SVG molecules + reaction type labels
-│   └── install.bat                    ←   One-click dependency installer (Windows)
-│
-└── retro-learn/                       ← WorkBuddy skill package
-    └── SKILL.md                       ←   This file (skill definition)
+└── retro-learn-skill/                 ← WorkBuddy skill package
+    ├── SKILL.md                       ←   This file (skill definition)
+    ├── scripts/                       ←   Helper scripts (invoked by the AI agent)
+    │   ├── run_retro.py               ←     Unified CLI (single-step + multi-step)
+    │   ├── visualize.py               ←     JSON → HTML with SVG molecules + reaction type labels
+    │   └── install.bat                ←     One-click dependency installer (Windows)
+    └── engine/                        ←   Engine adapter (imported by run_retro.py)
+        ├── __init__.py
+        ├── retro_engine.py            ←     Template matching + scoring
+        └── route_planner.py           ←     Multi-step beam search
 ```
 
 ### Two-repo architecture
@@ -91,7 +91,7 @@ git submodule update --init --recursive
 **Windows (one-click)**:
 
 ```bash
-cd retro_agent
+cd retro-learn-skill/scripts
 .\install.bat
 ```
 
@@ -107,7 +107,7 @@ pip install numpy==1.24.1 matplotlib==3.7.2 tqdm==4.65.0 rdkit-pypi==2023.3.3 rd
 
 ```bash
 python -c "import rdkit; import rdchiral; print('OK')"
-python retro_agent/run_retro.py -s "CC(=O)C=C(C)C" -k 3 -o test.json
+python retro-learn-skill/scripts/run_retro.py -s "CC(=O)C=C(C)C" -k 3 -o test.json
 ```
 
 ---
@@ -135,7 +135,7 @@ From the user's natural language, extract:
 
 ### Phase 2: Execute Retrosynthesis
 
-Run `retro_agent/run_retro.py` using the Bash tool.
+Run `retro-learn-skill/scripts/run_retro.py` using the Bash tool.
 
 The execution path depends on the request type. Three scenarios:
 
@@ -147,7 +147,7 @@ User asks for retrosynthesis without suggesting multiple steps.
 
 ```bash
 cd <project_root>
-python retro_agent/run_retro.py \
+python retro-learn-skill/scripts/run_retro.py \
   -s "CC(=O)C=C(C)C" \
   -k 5 \
   -o retro_result.json
@@ -166,8 +166,8 @@ User asks for multi-step retrosynthesis (e.g. "3-step" or just "multi-step") but
 
 | User says | Default behavior |
 |-----------|-----------------|
-| "3-step retrosynthesis" | 3 steps, top-1 (per_step_top_k=1, beam_width=5) |
-| "multi-step retrosynthesis" (no number) | 3 steps, top-1 |
+| "3-step retrosynthesis" | 3 steps, per_step_top_k=3, beam_width=8 |
+| "multi-step retrosynthesis" (no number) | 3 steps, per_step_top_k=3, beam_width=8 |
 | "2-step retrosynthesis, top-2 per step" | 2 steps, per_step_top_k=2 |
 | "5-step retrosynthesis, top-3" | 5 steps, per_step_top_k=3 |
 
@@ -175,10 +175,11 @@ User asks for multi-step retrosynthesis (e.g. "3-step" or just "multi-step") but
 
 ```bash
 cd <project_root>
-python retro_agent/run_retro.py \
+python retro-learn-skill/scripts/run_retro.py \
   -s "CC(=O)C=C(C)C" \
   --steps 3 \
-  --per-step-top-k 1 \
+  --per-step-top-k 3 \
+  --beam-width 8 \
   -o retro_result.json
 ```
 
@@ -186,7 +187,7 @@ python retro_agent/run_retro.py \
 
 ```bash
 # User says: "2-step retrosynthesis, top-2 per step"
-python retro_agent/run_retro.py \
+python retro-learn-skill/scripts/run_retro.py \
   -s "CC(=O)C=C(C)C" \
   --steps 2 \
   --per-step-top-k 2 \
@@ -207,20 +208,26 @@ User asks for multi-step retrosynthesis and provides a preferred starting materi
 2. Run single-step retrosynthesis with `top_k=5`
 3. Check if any route's reactants contain the preferred starting material
 4. If **yes**: output the route(s) that hit the starting material. Done.
-5. If **no**: run multi-step with `steps = current_steps + 1`, per_step_top_k=1, beam_width=5
+5. If **no**: run multi-step with `steps = current_steps + 1`, per_step_top_k=3, beam_width=8
 6. Check the final leaf reactants of the best route for the starting material
 7. If **yes**: output and stop
 8. If **no**: increment current_steps, repeat up to 5
 9. If the starting material is not reached within 5 steps: show the 5-step result and explain that the starting material was not found
 
+> **Why per_step_top_k=3?** For acyclic molecules (no rings), all routes score 0.0, making
+> the top-1 ranking arbitrary. Using per_step_top_k=3 retains multiple branches so a
+> viable route (e.g. elimination path) is not prematurely pruned. This adds negligible
+> runtime since template scanning (1266 templates) dominates the cost regardless of how
+> many results are retained.
+
 **Implementation** — run sequentially, checking results between steps:
 
 ```bash
 # Step 1: single-step, check for starting material
-python retro_agent/run_retro.py -s "TARGET" -k 5 -o step1.json
+python retro-learn-skill/scripts/run_retro.py -s "TARGET" -k 5 -o step1.json
 
 # Step 2 (if not found): 2-step beam search
-python retro_agent/run_retro.py -s "TARGET" --steps 2 --per-step-top-k 1 -o step2.json
+python retro-learn-skill/scripts/run_retro.py -s "TARGET" --steps 2 --per-step-top-k 3 --beam-width 8 -o step2.json
 
 # ... continue up to step 5 if needed
 ```
@@ -229,10 +236,11 @@ python retro_agent/run_retro.py -s "TARGET" --steps 2 --per-step-top-k 1 -o step
 
 ```bash
 # User says: "3-step retrosynthesis from toluene"
-python retro_agent/run_retro.py \
+python retro-learn-skill/scripts/run_retro.py \
   -s "C1(/C=C/C2=CC=CC=C2)=CC=CC=C1" \
   --steps 3 \
-  --per-step-top-k 1 \
+  --per-step-top-k 3 \
+  --beam-width 8 \
   -pr Cc1ccccc1 \
   -o retro_result.json
 ```
@@ -249,17 +257,24 @@ python retro_agent/run_retro.py \
 | `-cond` / `--condition` | Condition file name | `template_condition.json` |
 | `-w` / `--weights` | 4 scoring weights | `0.1 0.2 0.5 0.0` |
 | `-pr` / `--preferred-reactants` | Preferred reactant SMILES | (none) |
-| `--beam-width` | Beam width (multi-step) | 5 |
-| `--per-step-top-k` | Top-K per step (multi-step) | 5 |
+| `--beam-width` | Beam width (multi-step) | 8 |
+| `--per-step-top-k` | Top-K per step (multi-step) | 3 |
 | `-o` / `--output` | Output JSON path | `retro_result.json` |
 
 ### Phase 3: Generate Visualization
 
-Run the visualizer to convert the JSON result into an HTML page:
+**Default**: Use `visualize.py` for forward-direction flowchart visualization.
 
 ```bash
 cd <project_root>
-python retro_agent/visualize.py retro_result.json -o retro_result_view.html
+python retro-learn-skill/scripts/visualize.py retro_result.json -o retro_result_view.html
+```
+
+**Tree view** (alternative): Use `tree_view.py` only when the user explicitly asks for a tree-style layout (e.g. "树状", "tree view", "分支图", "层次图"). The tree shows a top-down branching diagram with target molecule at the top, intermediate nodes below, reaction conditions on connecting lines, and reaction type labels in each card.
+
+```bash
+cd <project_root>
+python retro-learn-skill/scripts/tree_view.py retro_result.json -o retro_result_tree.html
 ```
 
 This produces an HTML page with:
@@ -351,7 +366,8 @@ When `steps ≥ 2`, the planner uses beam search:
 
 - Each round: expand the non-stock leaf with the most atoms, generate single-step candidates
 - Retain top `beam_width` candidates ranked by: completion → preferred reactant match → stock ratio → score
-- Final output: the single best cumulative route
+- If a leaf has no matching templates, the route is kept as-is at its current depth (shorter routes are valid)
+- Final output: returns all complete routes, ordered by score
 
 ---
 
@@ -361,7 +377,7 @@ When `steps ≥ 2`, the planner uses beam search:
 |-----------|----------|
 | Invalid SMILES | "The SMILES format appears invalid. Please provide a canonical SMILES string." |
 | No template matches | "The template library does not cover this molecule. Try simplifying the structure." |
-| rdkit/rdchiral import fails | "Dependencies not installed. Run `retro_agent/install.bat` first." |
+| rdkit/rdchiral import fails | "Dependencies not installed. Run `retro-learn-skill/scripts/install.bat` first." |
 | Multi-step finds no route | "No viable multi-step route found. Try reducing the step count or removing preferred reactant constraints." |
 | Molecule name unresolvable | "Could not resolve this molecule name. Please provide the SMILES string directly." |
 
@@ -372,7 +388,7 @@ When `steps ≥ 2`, the planner uses beam search:
 | User Says | Action |
 |-----------|--------|
 | "Run retrosynthesis on CC(=O)C=C(C)C" | Single-step, top-5 → ask user which route to continue from |
-| "3-step retrosynthesis for mesityl oxide" | Resolve name → SMILES, multi-step 3 steps top-1 |
+| "3-step retrosynthesis for mesityl oxide" | Resolve name → SMILES, multi-step 3 steps per_step_top_k=3, beam_width=8 |
 | "multi-step retrosynthesis from butane" | Iterative search up to 5 steps, check if butane is reached at each step |
 | "2-step retrosynthesis, top-2 from ethanol" | 2 steps, per_step_top_k=2, preferred=CCO |
 | "Analyze synthetic routes for this molecule" | Ask for SMILES or name and whether single or multi-step |

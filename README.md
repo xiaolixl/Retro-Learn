@@ -95,6 +95,8 @@ The agent will invokes the underlying retrosynthesis engine with the guideline w
 
 `retro-agent` is the agent application layer built on top of `SimpRetro4Learn`. It includes backend workflow scripts and an HTML frontend. It requires an OpenAI-compatible API key because it uses an external LLM to parse natural-language requests. The web UI provides user-friendly interface and result display. A demo page has been setup by the development team:  http://49.232.19.102/ (This demopage uses DeepSeek API)
 
+![RetroLearn architecture](./retro-learn-web-agent.png)
+
 #### 3.1 Install retro-agent
 Download retro-agent folder to your work directory. If the environment required for SimpRetro4Learn has already been configured, retro-agent  requires  three additional Python packages:
 ```bash

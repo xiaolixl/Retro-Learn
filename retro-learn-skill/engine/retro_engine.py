@@ -52,8 +52,9 @@ def ASScore(p_mol, r_mol_dict, in_stock):
                 asscore += add
             else:
                 asscore += add if add > 2 else 0
-        if ('Mg' in v or 'Li' in v or 'Zn' in v) and v not in in_stock:
-            asscore -= 5
+        # Disabled: metal reagent penalty removed for educational use
+        # if ('Mg' in v or 'Li' in v or 'Zn' in v) and v not in in_stock:
+        #     asscore -= 5
     return asscore
 
 def RDScore(p_mol, r_mols):

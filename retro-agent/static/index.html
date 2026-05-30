@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retro-Learn</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#f0f4f8;--surface:#fff;--primary:#1e3a5f;--primary-lt:#2c5282;
+    --accent:#3182ce;--accent-hover:#2b6cb0;--text:#1a202c;--text-sec:#4a5568;
+    --text-muted:#718096;--border:#e2e8f0;--green:#38a169;--green-bg:#c6f6d5;
+    --red:#e53e3e;--red-bg:#fed7d7;--yellow:#d69e2e;--yellow-bg:#fefcbf;
+    --purple:#805ad5;--purple-bg:#e9d8fd;--blue:#3182ce;--blue-bg:#bee3f8;
+    --teal:#319795;--teal-bg:#b2f5ea;--gray:#718096;--radius:10px;--radius-sm:6px;
+    --shadow:0 1px 3px rgba(0,0,0,.06);--shadow-md:0 4px 14px rgba(0,0,0,.09);
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;
+    --mono:"SF Mono","Fira Code","Consolas",monospace;
+  }
+  body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+  .header{background:var(--primary);color:#fff;padding:18px 24px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.15);position:sticky;top:0;z-index:10}
+  .header h1{font-size:1.5rem;font-weight:700}
+  .header p{font-size:.85rem;opacity:.8;margin-top:2px}
+  .container{max-width:1060px;margin:0 auto;padding:28px 20px 60px}
+  /* input */
+  .card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin-bottom:24px;border:1px solid var(--border)}
+  .card-header{font-size:1.05rem;font-weight:600;margin-bottom:16px;color:var(--primary)}
+  textarea{width:100%;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;font-size:.95rem;font-family:var(--font);resize:vertical;min-height:80px;transition:border-color .15s;line-height:1.5}
+  textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(49,130,206,.12)}
+  .controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:16px}
+  .step-select{display:flex;align-items:center;gap:8px;font-size:.875rem;color:var(--text-sec)}
+  .step-select select{border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;font-size:.875rem;background:var(--surface);cursor:pointer}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:10px 22px;border-radius:var(--radius-sm);font-size:.9rem;font-weight:600;cursor:pointer;border:none;transition:all .15s;font-family:var(--font)}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-primary:hover{background:var(--accent-hover)}
+  .btn-primary:disabled{opacity:.55;cursor:not-allowed}
+  .btn-outline{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
+  .btn-outline:hover{background:rgba(49,130,206,.06)}
+  .examples{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .example-chip{font-size:.8rem;padding:5px 12px;border-radius:99px;border:1px solid var(--border);background:var(--bg);color:var(--text-sec);cursor:pointer;transition:all .12s}
+  .example-chip:hover{border-color:var(--accent);color:var(--accent);background:rgba(49,130,206,.04)}
+  /* status */
+  .status-bar{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:var(--radius-sm);font-size:.875rem;margin-bottom:20px;animation:fadeIn .25s}
+  .status-loading{background:#ebf8ff;color:var(--primary-lt);border:1px solid #bee3f8}
+  .status-error{background:#fff5f5;color:var(--error);border:1px solid #fed7d7}
+  .spinner{width:18px;height:18px;border:2.5px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+
+  /* result */
+  .result-card{background:var(--surface);border-radius:var(--radius) var(--radius) 0 0;box-shadow:var(--shadow-md);padding:28px 32px;border:1px solid var(--border);border-bottom:none;animation:fadeIn .35s}
+  .result-card h1,.result-card h2,.result-card h3,.result-card h4{color:var(--primary);margin:1em 0 .4em}
+  .result-card h2{font-size:1.2rem;border-bottom:1.5px solid var(--border);padding-bottom:8px}
+  .result-card h3{font-size:1.05rem}
+  .result-card h4{font-size:.98rem}
+  .result-card p{margin:.6em 0;line-height:1.7}
+  .result-card ul,.result-card ol{padding-left:1.5em;margin:.5em 0}
+  .result-card li{margin:.25em 0}
+  .result-card code{background:#edf2f7;padding:2px 6px;border-radius:3px;font-family:var(--mono);font-size:.875em}
+  .result-card blockquote{border-left:3px solid var(--yellow);margin:.8em 0;padding:8px 16px;background:#fffff0;border-radius:0 var(--radius-sm) var(--radius-sm) 0;color:#744210;font-size:.9rem}
+  .result-card strong{color:var(--primary)}
+  .result-card hr{border:none;border-top:1px solid var(--border);margin:20px 0}
+
+  /* viz iframe */
+  .viz-frame{width:100%;min-height:400px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;background:#fff}
+
+  /* route cards */
+  .routes-section{margin-top:24px}
+  .routes-section h2{font-size:1.15rem;color:var(--primary);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--accent)}
+
+  .route-card{border:2px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:16px;background:#fcfdfe;transition:box-shadow .15s}
+  .route-card:hover{box-shadow:var(--shadow-md)}
+  .route-card.best{border-color:var(--green);background:#f7fdf9;box-shadow:0 0 0 3px rgba(56,161,105,.08)}
+  .route-card.best .best-badge{display:inline-block;background:var(--green);color:#fff;padding:2px 10px;border-radius:99px;font-size:.72rem;font-weight:700;margin-left:8px}
+
+  .rc-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+  .rc-rank{width:28px;height:28px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;flex-shrink:0}
+  .rc-score{font-weight:700;font-size:.92rem;color:var(--primary);background:#ebf8ff;padding:2px 12px;border-radius:99px;font-family:var(--mono)}
+  .rc-conditions{font-size:.84rem;color:var(--text-sec);margin-bottom:16px}
+
+  /* reaction type tag */
+  .rxn-tag{display:inline-block;padding:2px 12px;border-radius:99px;font-size:.75rem;font-weight:600;white-space:nowrap}
+
+  /* forward synthesis layout */
+  .synth-row{display:flex;align-items:center;gap:0;flex-wrap:wrap;justify-content:center}
+  .mol-block{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 10px}
+  .mol-block img,.mol-block svg{max-width:110px;max-height:110px;height:auto;border-radius:4px}
+  .mol-block .smiles{font-family:var(--mono);font-size:.74rem;color:var(--text);word-break:break-all;text-align:center;max-width:130px}
+  .mol-block .mol-label{font-size:.72rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+
+  /* plus sign */
+  .plus-sign{font-size:1.3rem;font-weight:700;color:var(--text-muted);padding:0 4px;align-self:center}
+
+  /* reaction arrow */
+  .rxn-arrow{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 16px;min-width:120px;align-self:center}
+  .arrow-line{position:relative;width:100%;height:3px;background:var(--text);border-radius:2px;margin:6px 0}
+  .arrow-line::after{content:'';position:absolute;right:-2px;top:-6px;border:7px solid transparent;border-left:10px solid var(--text);border-right:0}
+  .arrow-above{font-size:.72rem;color:var(--text-sec);text-align:center;word-break:break-word;max-width:160px;line-height:1.3;font-style:italic}
+  .arrow-below{font-size:.72rem;text-align:center}
+
+  .stock-row{display:flex;gap:12px;margin-top:14px;flex-wrap:wrap}
+  .tag{display:inline-block;padding:2px 10px;border-radius:99px;font-size:.72rem;font-weight:600}
+  .tag-ok{background:var(--green-bg);color:#22543d}
+  .tag-no{background:var(--red-bg);color:#742a2a}
+  .tag-match{background:var(--purple-bg);color:#44337a}
+
+  /* multi-step */
+  .step-chain{margin:14px 0}
+  .step-item{border-left:3px solid var(--accent);padding:8px 0 8px 20px;margin-bottom:12px}
+  .step-item-header{font-weight:700;font-size:.9rem;color:var(--primary);margin-bottom:8px}
+  .step-item-header .step-badge{display:inline-block;background:var(--accent);color:#fff;padding:2px 14px;border-radius:99px;font-size:.8rem;margin-right:8px}
+
+  .leaf-section{margin-top:20px}
+  .leaf-section h3{font-size:1rem;color:var(--primary);margin-bottom:12px}
+  .leaf-grid{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start}
+
+  .output-dir{margin-top:0;padding:10px 14px;background:#f7fafc;border-radius:0 0 var(--radius) var(--radius);font-size:.8rem;color:var(--text-muted);font-family:var(--mono);word-break:break-all;border:1px solid var(--border);border-top:none}
+  .hidden{display:none!important}
+
+  @media(max-width:700px){
+    .container{padding:16px 12px 40px}
+    .card,.result-card{padding:16px}
+    .controls{flex-direction:column;align-items:stretch}
+    .btn{justify-content:center}
+    .header h1{font-size:1.2rem}
+    .synth-row{flex-direction:column}
+    .plus-sign{transform:rotate(90deg)}
+    .rxn-arrow{transform:rotate(90deg);padding:16px 0}
+    .mol-block img,.mol-block svg{max-width:90px;max-height:90px}
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <h1>Retro-Learn</h1>
+  <p>Retrosynthesis Tool for Education -- Free</p>
+</header>
+
+<div class="container">
+
+  <div class="card" id="input-card">
+    <div class="card-header">&#x1F3AF; Enter a target molecule name/SMILES.</div>
+    <textarea id="query-input" placeholder="e.g. Run a retrosynthesis for CC(=O)C=C(C)C"></textarea>
+    <div class="controls">
+      <button class="btn btn-primary" id="submit-btn" onclick="submitQuery()"><span style="filter:hue-rotate(90deg) saturate(2);">&#x1F500;</span> Analyze</button>
+      <button class="btn btn-outline" id="clear-btn" onclick="clearAll()">Clear</button>
+    </div>
+    <div style="font-size:.82rem;color:var(--text-sec);margin-top:12px;line-height:1.8;font-weight:400;text-align:left;">
+      &#x2728; Default is single-step (~10 sec).<br>
+      &#x2728; Multi-step available &mdash; specify steps and/or starting material (~1&ndash;3 min).<br>
+      &#x2728; For best results, provide SMILES. <b>Structure → SMILES</b>: <a href="https://en.stereolearn.chemcognitive.online/ketcher/demo.html" target="_blank" style="color:var(--accent);text-decoration:underline;">Ketcher</a>, <a href="https://en.stereolearn.chemcognitive.online/king/" target="_blank" style="color:var(--accent);text-decoration:underline;">KingDraw</a>
+    </div>
+    <div style="margin-top:12px;">
+      <div style="font-size:.82rem;color:var(--text-sec);font-weight:400;margin-bottom:6px;">&#x1F52C; Quick examples:</div>
+      <div class="examples">
+        <button class="example-chip" data-query="Run a retrosynthesis for CC(=O)C=C(C)C">retrosynthesis for CC(=O)C=C(C)C</button>
+        <button class="example-chip" data-query="Synthesize 1-butene from butane">synthesize 1-butene from butane</button>
+        <button class="example-chip" data-query="Synthesize E-stilbene from toluene">synthesize E-stilbene from toluene</button>
+        <button class="example-chip" data-query="从三碳以内（含三碳）的原料出发，合成CCC(C)(C)CC(C)=O">从≤3C原料合成CCC(C)(C)CC(C)=O</button>
+        <button class="example-chip" data-query="从任意不超过四个碳原子的原料出发，合成COC(=O)C1CC=C(C)CC1">从≤4C原料合成COC(=O)C1CC=C(C)CC1</button>
+        <button class="example-chip" data-query="retrosynthesis for 1-butene within 3 steps">retrosynthesis for 1-butene within 3 steps</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="status-area" class="hidden"></div>
+  <div id="results-area" class="hidden"></div>
+</div>
+
+<script>
+const API='/agent/query';
+const qInput=document.getElementById('query-input');
+const submitBtn=document.getElementById('submit-btn');
+const statusArea=document.getElementById('status-area');
+const resultsArea=document.getElementById('results-area');
+
+document.querySelectorAll('.example-chip').forEach(ch=>{ch.addEventListener('click',()=>{qInput.value=ch.dataset.query})});
+qInput.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')submitQuery()});
+
+function buildMessage(){
+  return qInput.value.trim();
+}
+
+function submitQuery(){
+  const msg=buildMessage();
+  if(!msg){showStatus('error','Please enter a retrosynthesis query.');return}
+  showStatus('loading','Analyzing, please wait…');
+  resultsArea.classList.add('hidden');submitBtn.disabled=true;
+  fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg})})
+    .then(r=>r.json()).then(data=>{
+      statusArea.classList.add('hidden');submitBtn.disabled=false;
+      if(data.status==='needs_clarification')showStatus('error',data.message||'Unable to resolve target molecule. Please provide a SMILES string.');
+      else if(data.status==='success')render(data);
+      else showStatus('error','Unexpected response status');
+    }).catch(err=>{statusArea.classList.add('hidden');submitBtn.disabled=false;showStatus('error','Request failed: '+err.message+'. Is the API server running?')});
+}
+
+function showStatus(t,m){
+  statusArea.classList.remove('hidden');
+  statusArea.className=t==='loading'?'status-bar status-loading':'status-bar status-error';
+  statusArea.innerHTML=t==='loading'?`<div class="spinner"></div><span>${esc(m)}</span>`:`<span>&#x26A0;</span><span>${esc(m)}</span>`;
+}
+
+/* ─ helpers ─ */
+function absUrl(abs,outDir,base){
+  const n=abs.replace(/\\/g,'/');const d=(outDir||'').replace(/\\/g,'/').replace(/\/$/,'');
+  const rel=n.startsWith(d)?n.slice(d.length).replace(/^\//,''):n;
+  return(base||'').replace(/\/$/,'')+'/'+rel;
+}
+function esc(s){const d=document.createElement('div');d.appendChild(document.createTextNode(s));return d.innerHTML}
+
+/* reaction type classification based on template SMARTS and conditions */
+function classifyRxn(template,conditions){
+  const t=(template||'').toLowerCase();const c=(conditions||[]).join(' ').toLowerCase();const a=t+' '+c;
+  if(/reductive|dehalogenat|debrominat|dechlorinat|deiodinat|hydrogenat|h2.*pd|zn.*hcl|h2.*ni/i.test(a))return{label:'Reduction',color:'#38a169',bg:'#c6f6d5'};
+  if(/elimination|dehydro|alkene.*form/i.test(a))return{label:'Elimination',color:'#3182ce',bg:'#bee3f8'};
+  if(/kmno4|oxid|o2\b|cuo|cro3|swern|dess.martin|alcohol.*carbonyl|ketone/i.test(a))return{label:'Oxidation',color:'#e53e3e',bg:'#fed7d7'};
+  if(/brominat|chlorinat|fluorinat|halogenat|bromide|cbr4|nbs|ncs/i.test(a))return{label:'Halogenation',color:'#805ad5',bg:'#e9d8fd'};
+  if(/cyclo.*add|diels.*alder|cycloaddit|cycliz/i.test(a))return{label:'Cycloaddition',color:'#d69e2e',bg:'#fefcbf'};
+  if(/aldol|grignard|wittig|cross.coupl|suzuki|heck|negishi|coupling|friedel/i.test(a))return{label:'Coupling',color:'#319795',bg:'#b2f5ea'};
+  if(/hydrolysis|ester|amide|carboxylic|acid.*chloride|acylation/i.test(a))return{label:'Acylation',color:'#dd6b20',bg:'#feebc8'};
+  if(/alkylat|aryl|substitut/i.test(a))return{label:'Substitution',color:'#0987a0',bg:'#c4f1f9'};
+  return{label:'Disconnection',color:'#718096',bg:'#e2e8f0'};
+}
+
+/* SVG embed from file path — load SVG text and embed inline for proper scaling */
+function svgEl(url,alt){return`<img src="${esc(url)}" alt="${esc(alt)}" loading="lazy" style="max-width:110px;max-height:110px;width:auto;height:auto">`}
+
+/* molBlock: single molecule with image + SMILES */
+function molBlock(imgPath,smiles,label,outDir,base){
+  if(!imgPath&&!smiles)return'';
+  const url=imgPath?absUrl(imgPath,outDir,base):'';
+  return`<div class="mol-block">
+    ${url?svgEl(url,smiles||'molecule'):''}
+    ${smiles?`<span class="smiles">${esc(smiles)}</span>`:''}
+    ${label?`<span class="mol-label">${esc(label)}</span>`:''}
+  </div>`;
+}
+
+/* ─ main render ─ */
+function render(data){
+  const outDir=data.output_dir||'';
+  const imgBase=data.image_base_url||'';
+  const bundle=data.image_bundle||{};
+  const planData=(data.planning_result||{}).data||{};
+  const mode=planData.mode||'single_step';
+
+  /* LLM explanation — strip the Structure Images section */
+  let md=data.reply_markdown||'';
+  md=md.replace(/\n## Structure Images[\s\S]*$/i,'').trim();
+  if(imgBase)md=md.replace(/\]\(\.\//g,`](${imgBase.replace(/\/$/,'')}/`);
+  const mdHtml=marked.parse(md);
+
+  /* viz iframe */
+  const vizUrl=data.viz_html_url||'';
+  const vizFrame=vizUrl?`<iframe class="viz-frame" src="${esc(vizUrl)}" onload="this.style.minHeight=(this.contentWindow.document.body.scrollHeight||400)+'px'"></iframe>`:'';
+
+  const cacheTag=data.cached?`<div style="display:inline-block;background:#e9d8fd;color:#553c9a;padding:2px 10px;border-radius:99px;font-size:.72rem;font-weight:600;margin-bottom:8px">&#x1F4BE; Cached result</div>`:'';
+  const dirHtml=outDir?`<div class="output-dir">&#x1F4C1; ${esc(outDir)}</div>`:'';
+
+  resultsArea.innerHTML=`
+    <div class="result-card">
+      ${cacheTag}
+      ${vizFrame}
+      ${mdHtml}
+    </div>
+    ${dirHtml}`;
+  resultsArea.classList.remove('hidden');
+  resultsArea.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ─ single-step: forward synthesis (reactants → product) for each route ─ */
+function buildSingle(planData,bundle,outDir,base){
+  const routes=planData.recommended_routes||[];
+  const bRoutes=bundle.routes||[];
+  const targetSmiles=planData.target_molecule?.smiles||'';
+  const targetImg=bundle.target||{};
+  if(!routes.length)return'';
+
+  /* target molecule display */
+  let html=`<div class="routes-section"><h2>Synthetic Routes</h2>`;
+  html+=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+    <span style="font-weight:600;color:var(--primary);font-size:.85rem">Target:</span>
+    ${molBlock(targetImg.svg||targetImg.png,targetSmiles,'',outDir,base)}
+  </div>`;
+
+  routes.forEach((route,i)=>{
+    const bRoute=bRoutes.find(r=>r.route_rank===route.route_rank)||(bRoutes[i]||{});
+    const isBest=i===0;
+    const score=route.score!=null?route.score.toFixed(4):'—';
+    const rxn=classifyRxn(route.reaction_template,route.reaction_condition);
+    const conditions=(route.reaction_condition||[]).map(c=>esc(c)).join(', ')||'standard conditions';
+
+    /* reactant blocks with + between them */
+    const rctImgs=(bRoute.reactants||[]);
+    const rBlocks=(route.reactants||[]).map((r,j)=>{
+      const img=rctImgs[j]||{};
+      return molBlock(img.svg||img.png,r.smiles,`Reactant ${j+1}`,outDir,base);
+    });
+
+    /* interleave + signs */
+    let reactantRow='';
+    rBlocks.forEach((b,j)=>{
+      if(j>0)reactantRow+=`<div class="plus-sign">+</div>`;
+      reactantRow+=b;
+    });
+
+    /* forward arrow */
+    const arrowHtml=`<div class="rxn-arrow">
+      <div class="arrow-above">${esc(conditions)}</div>
+      <div class="arrow-line"></div>
+      <div class="arrow-below"><span class="rxn-tag" style="background:${rxn.bg};color:${rxn.color}">${rxn.label}</span></div>
+    </div>`;
+
+    /* product (target) */
+    const productBlock=molBlock(targetImg.svg||targetImg.png,targetSmiles,'Product',outDir,base);
+
+    /* stock & match tags */
+    let tags='';
+    if(route.all_reactants_in_stock)tags+=`<span class="tag tag-ok">All Reactants In Stock</span>`;else tags+=`<span class="tag tag-no">Not All In Stock</span>`;
+    if((route.matched_preferred_reactants||[]).length)tags+=`<span class="tag tag-match">Matched: ${esc(route.matched_preferred_reactants.join(', '))}</span>`;
+
+    html+=`<div class="route-card${isBest?' best':''}">
+      <div class="rc-header">
+        <div class="rc-rank">${route.route_rank}</div>
+        <span class="rc-score">Score ${score}</span>
+        <span class="rxn-tag" style="background:${rxn.bg};color:${rxn.color}">${rxn.label}</span>
+        ${isBest?'<span class="best-badge">Best</span>':''}
+      </div>
+      <div class="rc-conditions">Conditions: ${esc(conditions)}</div>
+      <div class="synth-row">
+        ${reactantRow}
+        ${arrowHtml}
+        ${productBlock}
+      </div>
+      <div class="stock-row">${tags}</div>
+    </div>`;
+  });
+
+  html+=`</div>`;
+  return html;
+}
+
+/* ─ multi-step: forward chain from starting materials to target ─ */
+function buildMulti(planData,bundle,outDir,base){
+  const route=planData.recommended_route||{};
+  const steps=route.steps||[];
+  const bSteps=bundle.routes||[];
+  const leafImgs=bundle.final_leaf_reactants||[];
+  const targetImg=bundle.target||{};
+  const targetSmiles=planData.target_molecule?.smiles||'';
+  if(!steps.length)return'';
+
+  let html=`<div class="routes-section"><h2>Synthetic Route (Forward Direction)</h2>`;
+  html+=`<div style="font-size:.84rem;color:var(--text-sec);margin-bottom:16px;">
+    Steps: ${route.actual_steps||steps.length} / ${route.requested_steps||'—'} &nbsp;|&nbsp;
+    Avg Score: ${route.average_step_score!=null?route.average_step_score.toFixed(4):'—'} &nbsp;|&nbsp;
+    Stock Ratio: ${route.stock_leaf_ratio!=null?(route.stock_leaf_ratio*100).toFixed(0)+'%':'—'}
+    ${(route.matched_preferred_reactants||[]).length?`&nbsp;|&nbsp;<span class="tag tag-match">Matched: ${esc(route.matched_preferred_reactants.join(', '))}</span>`:''}
+  </div>`;
+
+  /* chain: final leaf reactants → ... → target */
+  /* Start from final step (closest to starting materials) going forward to target */
+  /* For display, show in reverse: step N → step N-1 → ... → step 1 → target */
+  const revSteps=[...steps].reverse();
+
+  revSteps.forEach((step,idx)=>{
+    const origIdx=steps.length-1-idx;
+    const bStep=bSteps.find(s=>s.step_number===step.step_number)||(bSteps[origIdx]||{});
+    const rxn=classifyRxn(step.reaction_template,step.reaction_condition);
+    const conditions=(step.reaction_condition||[]).map(c=>esc(c)).join(', ')||'standard conditions';
+    const isFirstStep=idx===0; /* closest to starting materials */
+    const isLastStep=idx===revSteps.length-1; /* closest to target */
+
+    /* reactants */
+    const rctImgs=(bStep.reactants||[]);
+    let reactantRow='';
+    (step.reactants||[]).forEach((r,j)=>{
+      const img=rctImgs[j]||{};
+      if(j>0)reactantRow+=`<div class="plus-sign">+</div>`;
+      reactantRow+=molBlock(img.svg||img.png,r.smiles,`Reactant ${j+1}`,outDir,base);
+    });
+
+    /* product of this step */
+    let productSmiles=step.expanded_smiles;
+    let productImg=(bStep.expanded||{});
+
+    /* if last step, product = target */
+    if(isLastStep&&targetSmiles){
+      productSmiles=targetSmiles;
+      productImg=targetImg;
+    }
+
+    const arrowHtml=`<div class="rxn-arrow">
+      <div class="arrow-above">${esc(conditions)}</div>
+      <div class="arrow-line"></div>
+      <div class="arrow-below"><span class="rxn-tag" style="background:${rxn.bg};color:${rxn.color}">${rxn.label}</span></div>
+    </div>`;
+
+    const productBlock=molBlock(
+      productImg.svg||productImg.png,
+      productSmiles,
+      isLastStep?'Final Product':'Intermediate',
+      outDir,base
+    );
+
+    html+=`<div class="step-item">
+      <div class="step-item-header"><span class="step-badge">Step ${step.step_number}</span> Score ${step.step_score!=null?step.step_score.toFixed(4):'—'}</div>
+      <div class="rc-conditions">Conditions: ${esc(conditions)}</div>
+      <div class="synth-row">
+        ${reactantRow}
+        ${arrowHtml}
+        ${productBlock}
+      </div>
+    </div>`;
+  });
+
+  /* final leaf reactants */
+  if(leafImgs.length){
+    const finalLeaves=route.final_leaf_reactants||[];
+    let leafCards='';
+    leafImgs.forEach((leaf,idx)=>{
+      const meta=finalLeaves[idx]||{};
+      leafCards+=molBlock(leaf.svg||leaf.png,leaf.smiles||meta.smiles,`Starting Material ${idx+1}`,outDir,base);
+    });
+    html+=`<div class="leaf-section"><h3>&#x1F33F; Starting Materials (Leaf Reactants)</h3><div class="leaf-grid">${leafCards}</div></div>`;
+  }
+
+  html+=`</div>`;
+  return html;
+}
+
+function clearAll(){
+  qInput.value='';statusArea.classList.add('hidden');resultsArea.classList.add('hidden');submitBtn.disabled=false;
+}
+</script>
+</body>
+</html>

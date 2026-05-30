@@ -81,79 +81,25 @@ def _common_name(smiles):
     return ""
 
 
-def classify_reaction(template_str, condition_list):
-    """Infer a short reaction type label from the SMARTS template and conditions."""
-    t = template_str or ""
-    conds = condition_list or []
+def classify_reaction(template_str, condition_list, reaction_type=None):
+    """Return reaction type label.
 
-    if t.count(">>") == 1:
-        parts = t.split(">>")
-        if len(parts) == 2:
-            prod_side = parts[1]
-            if prod_side.count(".") >= 1 and ("C=" in prod_side or "c1" in prod_side):
-                cc_count = sum(1 for f in prod_side.split(".") if "C=" in f or "c1" in f)
-                if cc_count >= 2:
-                    return "Retro Diels-Alder"
-
-    has_halogen_prod = any(h in t.split(">>")[-1] for h in ["Br-", "Cl-", "I-", "F-"])
-    has_alkene_prod = "C=" in t.split(">>")[-1]
-    if has_halogen_prod and has_alkene_prod:
-        return "Elimination (dehydrohalogenation)"
-
-    if any(h in t for h in ["Br-[CH", "Cl-[CH", "I-[CH"]) and ">>" in t:
-        rs = t.split(">>")[-1]
-        if "Br-" in rs:
-            return "Reductive debromination"
-        if "Cl-" in rs:
-            return "Reductive dechlorination"
-        if "I-" in rs:
-            return "Reductive deiodination"
-
-    if any(h in t for h in [">>Br-[Br", ">>Cl-[Cl", ">>BrBr", ">>ClCl"]):
-        return "Halogenation"
-
-    if "Br-" in t and ">>" in t:
-        ps = t.split(">>")[-1]
-        if "Br-" in ps and "BrBr" not in ps:
-            return "Bromination"
-
-    if "Cl-" in t and ">>" in t:
-        ps = t.split(">>")[-1]
-        if "Cl-" in ps:
-            return "Chlorination"
-
-    if "=[O" in t and ("OH" in t or "[OH" in t):
-        return "Oxidation (alcohol to carbonyl)"
-
-    if "=[O" in t and (">>[CH" in t or ">>[CH2" in t):
-        cs = " ".join(conds)
-        if "Zn(Hg)" in cs or "N2H4" in cs:
-            return "Carbonyl reduction (Clemmensen/Wolff-Kishner)"
-        return "Carbonyl reduction"
-
-    cs = " ".join(conds)
-    if "H2O" in cs or "NaOH" in cs.split(",") or "OH-" in cs:
-        if "OH" in t or "O-" in t:
-            return "Hydrolysis"
-
-    if conds:
-        c0 = conds[0] if isinstance(conds, list) else conds
-        if "KMnO4" in c0 or "CrO3" in c0 or "CuCrO4" in c0:
-            return "Oxidation"
-        if "Zn(Hg)" in c0 or "N2H4" in c0:
-            return "Reduction"
-        if "Br2" in c0:
-            return "Bromination"
-        if "H2" in c0 and ("Pd" in c0 or "Ni" in c0 or "Pt" in c0):
-            return "Catalytic hydrogenation"
-
-    return "Retro-synthetic disconnection"
+    Prefers pre-classified reaction_type from template cache (injected by
+    run_retro.py). Falls back to empty string if not classified.
+    """
+    if reaction_type:
+        return reaction_type
+    return ""
 
 
 def _rxn_type_class(label):
     ll = label.lower()
     if "diels-alder" in ll:
         return "rxn-type-da"
+    if "esterification" in ll or "amidation" in ll or "acylation" in ll:
+        return "rxn-type-ester"
+    if "coupling" in ll or "cross-coupling" in ll:
+        return "rxn-type-coupling"
     if "elimination" in ll or "dehydrohalogenation" in ll:
         return "rxn-type-elim"
     if "reduct" in ll or "hydrogenation" in ll:
@@ -162,6 +108,14 @@ def _rxn_type_class(label):
         return "rxn-type-ox"
     if "halogen" in ll or "bromin" in ll or "chlorin" in ll or "iodin" in ll:
         return "rxn-type-hal"
+    if "hydrolysis" in ll:
+        return "rxn-type-hydro"
+    if "substitution" in ll or "sn1" in ll or "sn2" in ll:
+        return "rxn-type-sub"
+    if "addition" in ll or "grignard" in ll or "wittig" in ll or "aldol" in ll:
+        return "rxn-type-add"
+    if "alkylation" in ll or "alkylat" in ll:
+        return "rxn-type-alk"
     return "rxn-type-default"
 
 
@@ -204,11 +158,29 @@ def _make_mol_box(svg, smiles, name="", stock=None):
     </div>'''
 
 
+def _make_target_mol_box(svg, smiles, name="", mw=""):
+    """Build a target molecule display box with distinctive 'target' label.
+
+    Same layout as regular mol-box (name → SMILES) but with indigo border,
+    indigo background on SVG, and a 'target' pill badge.
+    """
+    name_html = f'<span class="hl">{esc(name)}</span><br>' if name else ""
+    mw_html = f'<br>MW: {esc(mw)}' if mw else ""
+    return f'''<div class="mol-wrap mol-target">
+        {svg}
+        <div class="ml">{name_html}{esc(smiles)}{mw_html}
+            <span class="target-label">target</span>
+        </div>
+    </div>'''
+
+
 def generate_flowchart_html(data, output_path):
     """Generate a flowchart-style HTML visualization with forward-direction single-arrow layout."""
     target = data["data"]["target_molecule"]
     mode = data["data"].get("mode", "single_step")
     target_svg = smiles_to_svg_full(target["smiles"], 200, 160)
+    target_name = _common_name(target["smiles"]) or "Target"
+    target_mw = target.get("molecular_weight", "")
 
     html_css = """<!DOCTYPE html>
 <html lang="en">
@@ -262,16 +234,30 @@ def generate_flowchart_html(data, output_path):
   .rxn-type-ox { background: #fde8e8; color: #8a1a1a; }
   .rxn-type-hal { background: #f3e8fd; color: #5c1a8a; }
   .rxn-type-da { background: #fffbe0; color: #6b5a00; }
+  .rxn-type-ester { background: #fde8f3; color: #8a1a5c; }
+  .rxn-type-coupling { background: #fff0e0; color: #8a4a1a; }
+  .rxn-type-hydro { background: #e0f8f8; color: #1a6b6b; }
+  .rxn-type-sub { background: #e0f0f8; color: #1a4a6b; }
+  .rxn-type-add { background: #e8fde4; color: #2a6b1a; }
+  .rxn-type-alk { background: #f0e8fd; color: #4a1a8a; }
   .rxn-type-default { background: #f0f0f0; color: #555; }
 
-  .step-chain { display: flex; align-items: center; flex-wrap: wrap; justify-content: center; gap: 0; padding: 4px 0; }
+  .step-chain { display: block; padding: 4px 0; }
+  .step-row { display: block; margin-bottom: 4px; }
   .chain-mol { display: flex; flex-direction: column; align-items: center; }
   .chain-mol .mol-svg { max-width: 90px; height: auto; }
   .chain-mol .cl { font-size: 9px; color: #5F5E5A; text-align: center; margin-top: 1px; line-height: 1.2; }
   .chain-mol .cl .cname { font-size: 8px; color: #6b6b6b; font-style: italic; }
 
+  .step-label { font-size: 10px; color: #aaa; margin: 10px 0 2px 0; padding-left: 6px; letter-spacing: 0.3px; }
+  .step-label:first-child { margin-top: 4px; }
   .info-line { font-size: 11px; color: #555; margin-top: 6px; line-height: 1.6; }
   .footer { font-size: 11px; color: #999; text-align: center; margin-top: 20px; padding: 12px; border-top: 1px solid #eee; }
+
+  /* Target molecule distinctive styling */
+  .mol-target { position: relative; }
+  .mol-target .mol-svg { border: 2px solid #4338CA; border-radius: 6px; background: #EEEDFE; }
+  .target-label { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; color: #fff; background: #4338CA; letter-spacing: 0.5px; vertical-align: middle; }
 </style>
 </head>
 <body>
@@ -280,12 +266,9 @@ def generate_flowchart_html(data, output_path):
 
     parts = [html_css]
 
-    # Target card
+    # Target card — uses _make_target_mol_box for name + SMILES + target label
     parts.append(f"""<div class="target-card">
-  <div class="label">Target Molecule</div>
-  <div class="smiles">{esc(target['smiles'])}</div>
-  <div class="mw">MW: {target.get('molecular_weight', 'N/A')} g/mol</div>
-  <div class="mol-container">{target_svg}</div>
+  {_make_target_mol_box(target_svg, target['smiles'], target_name, str(target_mw))}
 </div>""")
 
     if mode == "single_step":
@@ -296,7 +279,7 @@ def generate_flowchart_html(data, output_path):
             is_best = rank == 1 and score > 0
             card_cls = "route-best" if is_best else "route-normal"
             cond = _dedup_conditions(route.get("reaction_condition", []))
-            rxn_label = classify_reaction(route.get("reaction_template", ""), route.get("reaction_condition", []))
+            rxn_label = classify_reaction(route.get("reaction_template", ""), route.get("reaction_condition", []), route.get("reaction_type"))
             rxn_cls = _rxn_type_class(rxn_label)
 
             parts.append(f'<div class="route-card {card_cls}">')
@@ -320,8 +303,8 @@ def generate_flowchart_html(data, output_path):
             # Single arrow with conditions on top
             parts.append(f'    {_make_arrow_section(cond, rxn_label, rxn_cls)}')
 
-            # Target on the right
-            parts.append(f'    {_make_mol_box(target_svg, target["smiles"])}')
+            # Target on the right — with target label
+            parts.append(f'    {_make_target_mol_box(target_svg, target["smiles"], target_name, str(target_mw))}')
 
             parts.append(f'  </div>')
             parts.append(f'</div>')
@@ -350,34 +333,67 @@ def generate_flowchart_html(data, output_path):
             card_cls = "route-best" if is_best else "route-normal"
 
             chain_parts = []
+            # Build stock lookup from leaf_reactants (canonical SMILES → in_stock)
             leaves = route.get("leaf_reactants", [])
-            for li, leaf in enumerate(leaves):
-                leaf_svg = smiles_to_svg_full(leaf["smiles"], 200, 160)
-                chain_parts.append(_make_mol_box(leaf_svg, leaf["smiles"],
-                    "Starting material", stock=leaf.get("in_stock")))
-                if li < len(leaves) - 1:
-                    chain_parts.append('<span class="plus">+</span>')
+            stock_lookup = {}
+            for leaf in leaves:
+                try:
+                    mol = Chem.MolFromSmiles(leaf["smiles"])
+                    if mol:
+                        stock_lookup[Chem.MolToSmiles(mol)] = leaf.get("in_stock", False)
+                except Exception:
+                    pass
 
-            for step in reversed(steps_history):
+            # Render each step in forward order (reactants → product)
+            # using expanded_smiles as the reactant list so co-reactants are never dropped
+            for si, step in enumerate(reversed(steps_history)):
                 target_smi = step.get("target_smiles", "")
+                expanded = step.get("expanded_smiles", "")
                 cond = _dedup_conditions(step.get("reaction_condition", []))
                 rxn_label = classify_reaction(step.get("reaction_template", ""),
-                                              step.get("reaction_condition", []))
+                                              step.get("reaction_condition", []),
+                                              step.get("reaction_type"))
                 rxn_cls = _rxn_type_class(rxn_label)
-                intermediates = target_smi.split(".")
-                if len(intermediates) > 1:
-                    chain_parts.append(_make_arrow_section(cond, rxn_label, rxn_cls))
-                    chain_parts.append('<div class="reactants">')
-                    for mi, inter in enumerate(intermediates):
-                        inter_svg = smiles_to_svg_full(inter, 180, 140)
-                        chain_parts.append(_make_mol_box(inter_svg, inter))
-                        if mi < len(intermediates) - 1:
-                            chain_parts.append('<span class="plus">+</span>')
-                    chain_parts.append('</div>')
+                is_last_step = (si == len(steps_history) - 1)
+
+                reactants = [r.strip() for r in expanded.split(".") if r.strip()]
+
+                # Step label
+                step_num = si + 1
+                chain_parts.append(f'<div class="step-row">')
+                chain_parts.append(f'<div class="step-label">Step {step_num}</div>')
+                chain_parts.append('<div class="step">')
+
+                # Reactant group
+                chain_parts.append('<div class="reactants">')
+                for ri, reactant in enumerate(reactants):
+                    # Check stock status via canonical SMILES lookup
+                    stock = None
+                    try:
+                        mol = Chem.MolFromSmiles(reactant)
+                        if mol:
+                            stock = stock_lookup.get(Chem.MolToSmiles(mol))
+                    except Exception:
+                        pass
+                    r_svg = smiles_to_svg_full(reactant, 180, 140)
+                    chain_parts.append(_make_mol_box(r_svg, reactant, "", stock=stock))
+                    if ri < len(reactants) - 1:
+                        chain_parts.append('<span class="plus">+</span>')
+                chain_parts.append('</div>')
+
+                # Arrow + conditions
+                chain_parts.append(_make_arrow_section(cond, rxn_label, rxn_cls))
+
+                # Product
+                tgt_svg = smiles_to_svg_full(target_smi, 200, 160)
+                if is_last_step:
+                    chain_parts.append(_make_target_mol_box(tgt_svg, target_smi, target_name, str(target_mw)))
                 else:
-                    tgt_svg = smiles_to_svg_full(target_smi, 200, 160)
-                    chain_parts.append(_make_arrow_section(cond, rxn_label, rxn_cls))
                     chain_parts.append(_make_mol_box(tgt_svg, target_smi))
+
+                chain_parts.append('</div>')  # close .step
+
+                chain_parts.append('</div>')  # close .step-row
 
             badge_text = "Best Route" if is_best else f"Route {rank}"
             parts.append(f'<div class="route-card {card_cls}">')

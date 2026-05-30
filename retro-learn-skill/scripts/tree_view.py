@@ -74,62 +74,14 @@ def dedup_conds(clist):
     return ", ".join(u)
 
 
-def classify_reaction(template_str, condition_list):
-    """Infer reaction type from SMARTS template and conditions."""
-    t = template_str or ""
-    conds = condition_list or []
+def classify_reaction(template_str, condition_list, reaction_type=None):
+    """Return reaction type label.
 
-    if t.count(">>") == 1:
-        parts = t.split(">>")
-        if len(parts) == 2:
-            prod_side = parts[1]
-            if prod_side.count(".") >= 1 and ("C=" in prod_side or "c1" in prod_side):
-                cc_count = sum(1 for f in prod_side.split(".") if "C=" in f or "c1" in f)
-                if cc_count >= 2:
-                    return "Retro Diels-Alder"
-
-    has_halogen_prod = any(h in t.split(">>")[-1] for h in ["Br-", "Cl-", "I-", "F-"])
-    has_alkene_prod = "C=" in t.split(">>")[-1]
-    if has_halogen_prod and has_alkene_prod:
-        return "Elimination"
-
-    if any(h in t for h in ["Br-[CH", "Cl-[CH", "I-[CH"]) and ">>" in t:
-        rs = t.split(">>")[-1]
-        if "Br-" in rs:
-            return "Reductive debromination"
-        if "Cl-" in rs:
-            return "Reductive dechlorination"
-
-    if any(h in t for h in [">>Br-[Br", ">>Cl-[Cl", ">>BrBr", ">>ClCl"]):
-        return "Halogenation"
-
-    if "Br-" in t and ">>" in t:
-        ps = t.split(">>")[-1]
-        if "Br-" in ps and "BrBr" not in ps:
-            return "Bromination"
-
-    if "=[O" in t and ("OH" in t or "[OH" in t):
-        return "Oxidation (alcohol to carbonyl)"
-
-    if "=[O" in t and (">>[CH" in t or ">>[CH2" in t):
-        cs = " ".join(conds)
-        if "Zn(Hg)" in cs or "N2H4" in cs:
-            return "Carbonyl reduction"
-        return "Carbonyl reduction"
-
-    if conds:
-        c0 = conds[0] if isinstance(conds, list) else conds
-        if "KMnO4" in c0 or "CrO3" in c0:
-            return "Oxidation"
-        if "Zn(Hg)" in c0 or "N2H4" in c0:
-            return "Reduction"
-        if "Br2" in c0:
-            return "Bromination"
-        if "H2" in c0 and ("Pd" in c0 or "Ni" in c0):
-            return "Catalytic hydrogenation"
-        if "ether" in c0.lower() and "[Mg]" in t:
-            return "Coupling"
-
+    Prefers pre-classified reaction_type from template cache (injected by
+    run_retro.py). Falls back to empty string if not classified.
+    """
+    if reaction_type:
+        return reaction_type
     return ""
 
 # ── Layout engine ─────────────────────────────────────────
@@ -192,7 +144,7 @@ class TreeLayout:
         """Multi-step: tight columns for intermediates, leaves fan out."""
         tw = self.MOL_W
         th = self.MOL_H
-        n_routes = min(len(all_routes), 6)
+        n_routes = min(len(all_routes), 10)
 
         # Tight column gap for intermediates
         col_gap = max(25, self.GAP_X - (n_routes - 3) * 15)
@@ -254,18 +206,26 @@ class TreeLayout:
                 self.add_edge(prev_id, sid, cond)
                 prev_id = sid
                 cy += th + self.GAP_Y
+                last_cond = cond  # remember for leaf edge
 
-            if n_leaves > 1:
+            # Leaf nodes only needed for multi-leaf routes; single-leaf routes
+            # already have the reactant shown in the last step node.
+            need_leaves = (n_leaves > 1)
+            if not need_leaves:
+                pass  # step node itself shows the reactant(s); no extra leaf nodes
+            elif n_leaves > 1:
                 cy += self.GAP_Y
 
             leaf_row_w = n_leaves * tw + max(0, n_leaves - 1) * leaf_gap
             lx0 = cx - leaf_row_w / 2 + tw / 2
 
             for li, leaf in enumerate(leaves):
+                if not need_leaves:
+                    continue
                 lid = self.new_id()
                 lx = lx0 + li * (tw + leaf_gap) if n_leaves > 1 else lx0
                 self.add_node(lid, lx, cy, tw, th)
-                self.add_edge(prev_id, lid, "")
+                self.add_edge(prev_id, lid, last_cond if last_cond else leaf.get("smiles", "")[:30])
                 min_x_all = min(min_x_all, lx)
                 max_x_all = max(max_x_all, lx + tw)
 
@@ -293,7 +253,7 @@ def render_svg(layout, target_smiles, routes_data, target_svg, mode):
     def t(x):
         return x + cx  # translate to center
 
-    parts = [f'''<svg viewBox="0 0 {W} {H}" width="100%" role="img"
+    parts = [f'''<svg viewBox="0 0 {W} {H}" width="{W}" role="img"
   xmlns="http://www.w3.org/2000/svg">''']
 
     # Build node metadata
@@ -323,29 +283,53 @@ def render_svg(layout, target_smiles, routes_data, target_svg, mode):
             node_meta[nid]["score"] = route.get("score", 0)
             node_meta[nid]["rxn_type"] = classify_reaction(
                 route.get("reaction_template", ""),
-                route.get("reaction_condition", []))
+                route.get("reaction_condition", []),
+                route.get("reaction_type"))
             node_idx += 1
 
     else:
         best_score = max((r.get("route_score", -999) for r in routes_data), default=0)
-        for route in routes_data[:6]:
-            is_best = route.get("route_score", -999) >= best_score and best_score > -998
+        best_count = sum(1 for r in routes_data if r.get("route_score", -999) == best_score)
+        only_one_best = (best_count == 1)
+        route_idx = 0
+        for route in routes_data[:10]:
+            route_idx += 1
+            is_best = only_one_best and route.get("route_score", -999) == best_score
             steps = route.get("steps_history", [])
-            for step in steps:
+            leaves = route.get("leaf_reactants", [])
+            n_leaves = len(leaves)
+            n_steps = len(steps)
+            need_leaves = (n_leaves > 1)
+
+            for si, step in enumerate(steps):
                 if node_idx >= len(layout.nodes):
                     break
                 nid = layout.nodes[node_idx][0]
-                node_meta[nid]["smiles"] = step.get("target_smiles", "")
+                expanded = step.get("expanded_smiles", "")
+                is_last = (si == n_steps - 1)
+                if "." in expanded:
+                    if is_last and not need_leaves:
+                        # Last step, no leaf nodes: render as multipart directly
+                        parts_smi = expanded.split(".")
+                        node_meta[nid]["multipart"] = [(s, False) for s in parts_smi]
+                    else:
+                        # Dot-separated but not last/no-multipart: compact text
+                        node_meta[nid]["smiles"] = expanded.replace(".", " · ")
+                else:
+                    node_meta[nid]["smiles"] = expanded
                 node_meta[nid]["score"] = step.get("step_score", 0)
                 node_meta[nid]["route_score"] = route.get("route_score", 0)
                 node_meta[nid]["is_best"] = is_best
+                node_meta[nid]["route_label"] = f"Route {route_idx}"
                 node_meta[nid]["rxn_type"] = classify_reaction(
                     step.get("reaction_template", ""),
-                    step.get("reaction_condition", []))
+                    step.get("reaction_condition", []),
+                    step.get("reaction_type"))
                 node_idx += 1
 
-            leaves = route.get("leaf_reactants", [])
             for leaf in leaves:
+                if not need_leaves:
+                    continue
                 if node_idx >= len(layout.nodes):
                     break
                 nid = layout.nodes[node_idx][0]
@@ -353,6 +337,7 @@ def render_svg(layout, target_smiles, routes_data, target_svg, mode):
                 node_meta[nid]["stock"] = leaf.get("in_stock")
                 node_meta[nid]["route_score"] = route.get("route_score", 0)
                 node_meta[nid]["is_best"] = is_best
+                node_meta[nid]["route_label"] = f"Route {route_idx}"
                 node_idx += 1
 
     # Draw edges
@@ -426,6 +411,12 @@ def render_svg(layout, target_smiles, routes_data, target_svg, mode):
         if rxn:
             parts.append(f'<text x="{x + w / 2}" y="{y + h - 6}" class="rxn-label" text-anchor="middle">{esc(rxn)[:30]}</text>')
 
+        # Route label (above first node of each route)
+        route_label = meta.get("route_label", "")
+        if route_label and not is_target:
+            parts.append(f'<rect x="{x + 2}" y="{y - 14}" width="52" height="14" rx="3" fill="#534AB7"/>')
+            parts.append(f'<text x="{x + 28}" y="{y - 4}" class="stock-badge" text-anchor="middle">{esc(route_label)}</text>')
+
         # Target badge (above node)
         if is_target:
             parts.append(f'<text x="{x + w / 2}" y="{y - 8}" class="target-label" text-anchor="middle">Target Molecule</text>')
@@ -456,7 +447,7 @@ HTML_TPL = """<!DOCTYPE html>
   body { font-family: -apple-system, 'Segoe UI', sans-serif; background: #f8f8f6; color: #2c2c2a; padding: 24px; margin: 0; text-align: center; }
   h1 { font-size: 18px; font-weight: 500; color: #26215C; margin-bottom: 8px; }
   .subtitle { font-size: 13px; color: #888; margin-bottom: 20px; }
-  .svg-wrap { max-width: 900px; margin: 0 auto; overflow-x: auto; }
+  .svg-wrap { max-width: 100%; margin: 0 auto; overflow-x: auto; overflow-y: hidden; padding: 10px; -webkit-overflow-scrolling: touch; }
   svg { font-family: -apple-system, 'Segoe UI', sans-serif; }
   .node-label { font-size: 11px; fill: #2c2c2a; }
   .rxn-label { font-size: 9px; fill: #534AB7; font-weight: 500; }

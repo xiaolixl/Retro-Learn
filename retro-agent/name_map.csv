@@ -1,0 +1,58 @@
+﻿smiles,name
+C,Methane
+CC,Ethane
+CCC,Propane
+CCCC,Butane
+C=C,Ethylene
+C=CC,Propylene
+C=CCC,1-Butene
+CC=CC,2-Butene
+CC(C)=C,Isobutylene
+C#C,Acetylene
+CO,Methanol
+CCO,Ethanol
+CCCO,1-Propanol
+CC(C)O,Isopropanol
+C=CO,Vinyl alcohol
+C=O,Formaldehyde
+CC=O,Acetaldehyde
+CC(C)=O,Acetone
+CCC(C)=O,2-Butanone
+C=CC=O,Acrolein
+C=CC(C)=O,Methyl vinyl ketone
+CC(=O)O,Acetic acid
+CC(=O)OC(C)=O,Acetic anhydride
+BrBr,Bromine
+ClCl,Chlorine
+II,Iodine
+CBr,Methyl bromide
+CCBr,Ethyl bromide
+CCCBr,1-Bromopropane
+CCC(C)Br,2-Bromobutane
+CC(C)(C)Br,tert-Butyl bromide
+CC(Br)CBr,"1,2-Dibromopropane"
+c1ccccc1,Benzene
+Cc1ccccc1,Toluene
+Cc1ccc(C)cc1,p-Xylene
+"C1(/C=C/C2=CC=CC=C2)=CC=CC=C1",trans-Stilbene
+BrCc1ccccc1,Benzyl bromide
+O,Water
+O=O,Oxygen
+N#N,Nitrogen
+O=C=O,Carbon dioxide
+N#CC,Acetonitrile
+CCOCC,Diethyl ether
+C1CO1,Ethylene oxide
+C[Mg]Br,Methylmagnesium bromide
+C[Mg]I,Methylmagnesium iodide
+C[Mg]Cl,Methylmagnesium chloride
+"O=[Mn](=O)(=O)[O-]",Permanganate
+"C1(/C=C/C2=CC=CC=C2)=CC=CC=C1",stilbene
+Oc1ccccc1,phenol
+Oc1cccc(Br)c1,3-bromophenol
+Nc1ccccc1,aniline
+O=[N+]([O-])c1ccccc1,nitrobenzene
+Clc1ccccc1,chlorobenzene
+Brc1ccccc1,bromobenzene
+O=Cc1ccccc1,benzaldehyde
+O=C(O)c1ccccc1,benzoic acid

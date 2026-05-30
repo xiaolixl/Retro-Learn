@@ -1,4 +1,4 @@
-# RetroLearn
+# Retro-Learn
 
 Retro-Learn provides compuper- and LLM- assisted retrosynthetic route planning tools.  
 - `SimpRetro4Learn` provides template-based retrosynthesis engine, whose reaction templates are customized for university-level organic chemistry and educational use.

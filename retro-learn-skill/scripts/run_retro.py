@@ -77,6 +77,56 @@ from engine.retro_engine import (
 from engine.route_planner import plan_retrosynthesis
 
 
+def _load_reaction_type_cache():
+    """Load template → reaction_type mapping from template_reaction_types.json."""
+    cache_path = os.path.join(_script_dir, "template_reaction_types.json")
+    if os.path.isfile(cache_path):
+        with open(cache_path, encoding="utf-8") as f:
+            return json.load(f)
+    return {}
+
+
+def _assign_reaction_types(result):
+    """Inject reaction_type into each route/step based on template cache lookup.
+
+    Mutates result dict in-place. Looks up each reaction_template in the
+    pre-classified cache (template_reaction_types.json). If found, sets
+    the reaction_type field on the route/step dict.
+    """
+    cache = _load_reaction_type_cache()
+    if not cache:
+        return
+
+    data = result.get("data", {})
+    mode = data.get("mode", "single_step")
+
+    if mode == "single_step":
+        for route in data.get("retrosynthesis_routes", []):
+            tmpl = route.get("reaction_template", "").strip()
+            if tmpl and tmpl in cache:
+                rxn_type = cache[tmpl]
+                if rxn_type and rxn_type != "Other":
+                    route["reaction_type"] = rxn_type
+    else:
+        # Recommended route steps
+        rec = data.get("recommended_route")
+        if rec:
+            for step in rec.get("steps", []):
+                tmpl = step.get("reaction_template", "").strip()
+                if tmpl and tmpl in cache:
+                    rxn_type = cache[tmpl]
+                    if rxn_type and rxn_type != "Other":
+                        step["reaction_type"] = rxn_type
+        # All routes' steps_history
+        for route in data.get("all_routes", []):
+            for step in route.get("steps_history", []):
+                tmpl = step.get("reaction_template", "").strip()
+                if tmpl and tmpl in cache:
+                    rxn_type = cache[tmpl]
+                    if rxn_type and rxn_type != "Other":
+                        step["reaction_type"] = rxn_type
+
+
 def run_single_step(args):
     result = run_retrosynthesis(
         smiles=args.smiles,
@@ -134,6 +184,8 @@ def main():
         result = run_multi_step(args)
     else:
         result = run_single_step(args)
+
+    _assign_reaction_types(result)
 
     with open(args.output, "w", encoding="utf-8") as f:
         json.dump(result, f, indent=2, ensure_ascii=False)

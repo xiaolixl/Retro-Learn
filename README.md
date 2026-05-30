@@ -1,9 +1,9 @@
-# Retro-Learn
+# RetroLearn
 
 Retro-Learn provides compuper- and LLM- assisted retrosynthetic route planning tools.  
 - `SimpRetro4Learn` provides template-based retrosynthesis engine, whose reaction templates are customized for university-level organic chemistry and educational use.
 - `retro-learn-skill` contains an AI agent-compatible SKILL and helper scripts that enable an agent to call SimpRetro engine and perform retrosynthetic route planning and results visualization automatically. 
-- `retro-agent` web agent layer that connects users with SimpRetro engine through a large language model. It interprets natural-language requests, invokes the underlying engine, and presents synthesis routes and explanations in a user-friendly format. A demo page page: http://49.232.19.102/ 
+- `retro-agent` is the web agent layer that connects users with SimpRetro engine through a large language model. It interprets natural-language requests, invokes the underlying engine, and presents synthesis routes and explanations in a user-friendly format. A demo page page: http://49.232.19.102/ 
 ---
 
 ## Repository Structure
@@ -41,8 +41,8 @@ Retro-Learn/
 
 ### 1. SimpRetro4Learn:
 
-To use the tools in this packahge, you should install and test 
-`SimpRetro4Learn` first. Follow the instructions in SimpRetro4Learn/README.md to setup up the required Python environment, after which the single-step retrosynthetic analysis can be performed by calling the following command. 
+To use the tools in this package, you should install and test 
+`SimpRetro4Learn` first. Follow the instructions in SimpRetro4Learn/README.md to set up the required Python environment, after which the single-step retrosynthetic analysis can be performed by calling the following command. 
 
 ```bash
     cd SimpRetro4Learn
@@ -57,7 +57,7 @@ See SimpRetro4Learn/README.md for the more details about the attributes and adva
 
 How it works:
 
-1. The user describes the target molecule and desired route in natural language (e.g. "Find a 3-step retrosynthesis route for CC(=O)C=C(C)C", or "Find a synthesis route for stillbene from tolune").
+1. The user describes the target molecule and desired route in natural language.
 2. The AI agent parses the request — converting chemical names to SMILES, extracting the target SMILES, step count, and any preferred starting materials. 
 3. The agent runs `retro-learn-skill/scripts/run_retro.py`, which calls the SimpRetro engine.
 4. The agent runs `retro-learn-skill/scripts/visualize.py` to generate an HTML route view with RDKit molecular structures.
@@ -66,36 +66,34 @@ How it works:
 #### 2.1 Clone
 
 ```bash
-git clone --recurse-submodules https://github.com/xiaolixl/retro-learn-skill.git
-cd retro-learn
+git clone --recurse-submodules https://github.com/xiaolixl/Retro-Learn.git
+cd Retro-Learn
 ```
 
 > If you already cloned without `--recurse-submodules`, run:
 > ```bash
 > git submodule update --init --recursive
 > ```
-The environment requirements for the scripts under the retro-learn-skill/ are the same as those for SimpRetro4Learn. So if you have setup up the environment for SimpRetro4Learn, you do not need to install any additional packages for SKILL.
+The environment requirements for the scripts under the retro-learn-skill/ are the same as those for SimpRetro4Learn. So if you have set up the environment for SimpRetro4Learn, you do not need to install any additional packages for SKILL.
 
 #### 2.2 Install SKILL on AI Agent
-- Claude Code：se retro-learn-skill/SKILL.md as the skill instruction file.
+- Claude Code: use retro-learn-skill/SKILL.md.
 - WorkBuddy: upload the retro-learn-skill/ folder as a skill.
-- Codex
+- Codex:copy the `retro-learn-skill/` folder to `$CODEX_HOME/skills/retro-learn/` or `C:\Users\<USER>\.codex\skills\retro-learn\`, remove unsupported frontmatter fields such as `agent_created`, and restart Codex to reload the skill.
 
 #### 2.3 Automate Retrosynthetic Analysis with SKILL 
 In the chatbox of the AI agent with the SKILL installed, type:
 ```text
 "Find a 3-step retrosynthesis route for CC(=O)C=C(C)C" 
 
-"Find a synthesis route for stillbene from tolune"
+"Find a synthesis route for stilbene from toluene"
 ```
-The agent will invokes the underlying retrosynthesis engine with the guideline written in SKILL.md. 
+The agent will invoke the underlying retrosynthesis engine with the guideline written in SKILL.md. 
 
 
 ### 3. retro-agent: 
 
-`retro-agent` is the agent application layer built on top of `SimpRetro4Learn`. It includes backend workflow scripts and an HTML frontend. It requires an OpenAI-compatible API key because it uses an external LLM to parse natural-language requests. The web UI provides user-friendly interface and result display. A demo page has been setup by the development team:  http://49.232.19.102/ (This demopage uses DeepSeek API)
-
-![RetroLearn architecture](./retro-learn-web-agent.png)
+`retro-agent` is the agent application layer built on top of `SimpRetro4Learn`. It includes backend workflow scripts and an HTML frontend. It requires an OpenAI-compatible API key because it uses an external LLM to parse natural-language requests. The web UI provides user-friendly interface and result display. A demo page has been set up by the development team:  http://49.232.19.102/ (This demopage uses DeepSeek API)
 
 #### 3.1 Install retro-agent
 Download retro-agent folder to your work directory. If the environment required for SimpRetro4Learn has already been configured, retro-agent  requires  three additional Python packages:
@@ -139,3 +137,4 @@ cd retro-agent
 python agent_cli.py -q "RPerform retrosynthetic analysis for CC(=O)C=C(C)C"
 ```
 ---
+

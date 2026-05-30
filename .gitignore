@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE
+.vscode/
+.idea/
+
+# Local test outputs (keep only cache)
+retro-agent/retro_result.json
+retro-agent/temp_run_retro.py
+retro-agent/user_output/agent_runs/
+
+# WorkBuddy
+.workbuddy/

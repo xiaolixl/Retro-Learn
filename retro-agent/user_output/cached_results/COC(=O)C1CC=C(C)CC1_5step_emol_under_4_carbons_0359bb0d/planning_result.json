@@ -1,0 +1,562 @@
+{
+  "status": "success",
+  "message": "Found 8 multi-step route(s).",
+  "data": {
+    "target_molecule": {
+      "smiles": "COC(=O)C1CC=C(C)CC1",
+      "molecular_weight": 154.1,
+      "in_stock": false
+    },
+    "mode": "multi_step",
+    "recommended_route": {
+      "actual_steps": 3,
+      "route_score": 4.4777,
+      "leaf_reactants": [
+        {
+          "smiles": "CO",
+          "in_stock": true,
+          "molecular_weight": 32.03
+        },
+        {
+          "smiles": "C=CC(=O)O",
+          "in_stock": true,
+          "molecular_weight": 72.02
+        },
+        {
+          "smiles": "C=C(C)Br",
+          "in_stock": true,
+          "molecular_weight": 119.96
+        },
+        {
+          "smiles": "[Li][Cu](C=C)C=C",
+          "in_stock": true,
+          "molecular_weight": 123.99
+        }
+      ],
+      "steps": [
+        {
+          "step_number": 1,
+          "target_smiles": "COC(=O)C1CC=C(C)CC1",
+          "expanded_smiles": "CC1=CCC(C(=O)O)CC1.CO",
+          "reaction_template": "[C:2]-[C;H0;D3;+0:1](=[O;D1;H0:3])-[O;H0;D2;+0:5]-[C;D1;H3:4]>>O-[C;H0;D3;+0:1](-[C:2])=[O;D1;H0:3].[C;D1;H3:4]-[OH;D1;+0:5]",
+          "reaction_condition": [
+            "H+"
+          ],
+          "step_score": 0.6444,
+          "reaction_type": "Esterification"
+        },
+        {
+          "step_number": 2,
+          "target_smiles": "CC1=CCC(C(=O)O)CC1",
+          "expanded_smiles": "C=CC(=C)C.C=CC(=O)O",
+          "reaction_template": "[#8:1]-[C:2](=[O;D1;H0:3])-[CH;D3;+0:4]1-[CH2;D2;+0:10]-[CH2;D2;+0:8]-[C;H0;D3;+0:7](-[C;D1;H3:6])=[CH;D2;+0:9]-[CH2;D2;+0:5]-1>>[#8:1]-[C:2](=[O;D1;H0:3])-[CH;D2;+0:4]=[CH2;D1;+0:5].[C;D1;H3:6]-[C;H0;D3;+0:7](=[CH2;D1;+0:8])-[CH;D2;+0:9]=[CH2;D1;+0:10]",
+          "reaction_condition": [
+            "heat"
+          ],
+          "step_score": 2.5,
+          "reaction_type": "Diels-Alder cycloaddition"
+        },
+        {
+          "step_number": 3,
+          "target_smiles": "C=CC(=C)C",
+          "expanded_smiles": "C=C(C)Br.[Li][Cu](C=C)C=C",
+          "reaction_template": "[C;D1;H3:2]-[C;H0;D3;+0:1](=[CH2;D1;+0:4])-[CH;D2;+0:3]=[CH2;D1;+0:5]>>Br-[C;H0;D3;+0:1](-[C;D1;H3:2])=[CH2;D1;+0:3].C=[CH;D2;+0:4]-[Cu](-[Li])-C=[CH2;D1;+0:5]",
+          "reaction_condition": [],
+          "step_score": 1.3333,
+          "reaction_type": "Cross-coupling (Gilman cuprate)"
+        }
+      ]
+    },
+    "all_routes": [
+      {
+        "route_rank": 1,
+        "route_score": 4.4777,
+        "steps": 3,
+        "leaf_reactants": [
+          {
+            "smiles": "CO",
+            "in_stock": true,
+            "molecular_weight": 32.03
+          },
+          {
+            "smiles": "C=CC(=O)O",
+            "in_stock": true,
+            "molecular_weight": 72.02
+          },
+          {
+            "smiles": "C=C(C)Br",
+            "in_stock": true,
+            "molecular_weight": 119.96
+          },
+          {
+            "smiles": "[Li][Cu](C=C)C=C",
+            "in_stock": true,
+            "molecular_weight": 123.99
+          }
+        ],
+        "steps_history": [
+          {
+            "step_number": 1,
+            "target_smiles": "COC(=O)C1CC=C(C)CC1",
+            "expanded_smiles": "CC1=CCC(C(=O)O)CC1.CO",
+            "reaction_template": "[C:2]-[C;H0;D3;+0:1](=[O;D1;H0:3])-[O;H0;D2;+0:5]-[C;D1;H3:4]>>O-[C;H0;D3;+0:1](-[C:2])=[O;D1;H0:3].[C;D1;H3:4]-[OH;D1;+0:5]",
+            "reaction_condition": [
+              "H+"
+            ],
+            "step_score": 0.6444,
+            "reaction_type": "Esterification"
+          },
+          {
+            "step_number": 2,
+            "target_smiles": "CC1=CCC(C(=O)O)CC1",
+            "expanded_smiles": "C=CC(=C)C.C=CC(=O)O",
+            "reaction_template": "[#8:1]-[C:2](=[O;D1;H0:3])-[CH;D3;+0:4]1-[CH2;D2;+0:10]-[CH2;D2;+0:8]-[C;H0;D3;+0:7](-[C;D1;H3:6])=[CH;D2;+0:9]-[CH2;D2;+0:5]-1>>[#8:1]-[C:2](=[O;D1;H0:3])-[CH;D2;+0:4]=[CH2;D1;+0:5].[C;D1;H3:6]-[C;H0;D3;+0:7](=[CH2;D1;+0:8])-[CH;D2;+0:9]=[CH2;D1;+0:10]",
+            "reaction_condition": [
+              "heat"
+            ],
+            "step_score": 2.5,
+            "reaction_type": "Diels-Alder cycloaddition"
+          },
+          {
+            "step_number": 3,
+            "target_smiles": "C=CC(=C)C",
+            "expanded_smiles": "C=C(C)Br.[Li][Cu](C=C)C=C",
+            "reaction_template": "[C;D1;H3:2]-[C;H0;D3;+0:1](=[CH2;D1;+0:4])-[CH;D2;+0:3]=[CH2;D1;+0:5]>>Br-[C;H0;D3;+0:1](-[C;D1;H3:2])=[CH2;D1;+0:3].C=[CH;D2;+0:4]-[Cu](-[Li])-C=[CH2;D1;+0:5]",
+            "reaction_condition": [],
+            "step_score": 1.3333,
+            "reaction_type": "Cross-coupling (Gilman cuprate)"
+          }
+        ]
+      },
+      {
+        "route_rank": 2,
+        "route_score": 4.2333,
+        "steps": 3,
+        "leaf_reactants": [
+          {
+            "smiles": "CBr",
+            "in_stock": true,
+            "molecular_weight": 93.94
+          },
+          {
+            "smiles": "C=CC(=O)O",
+            "in_stock": true,
+            "molecular_weight": 72.02
+          },
+          {
+            "smiles": "C=C(C)Br",
+            "in_stock": true,
+            "molecular_weight": 119.96
+          },
+          {
+            "smiles": "[Li][Cu](C=C)C=C",
+            "in_stock": true,
+            "molecular_weight": 123.99
+          }
+        ],
+        "steps_history": [
+          {
+            "step_number": 1,
+            "target_smiles": "COC(=O)C1CC=C(C)CC1",
+            "expanded_smiles": "CBr.CC1=CCC(C(=O)O)CC1",
+            "reaction_template": "[C:2]-[O;H0;D2;+0:3]-[CH3;D1;+0:1]>>Br-[CH3;D1;+0:1].[C:2]-[OH;D1;+0:3]",
+            "reaction_condition": [
+              "Base",
+              "Base"
+            ],
+            "step_score": 0.4,
+            "reaction_type": "Substitution"
+          },
+          {
+            "step_number": 2,
+            "target_smiles": "CC1=CCC(C(=O)O)CC1",
+            "expanded_smiles": "C=CC(=C)C.C=CC(=O)O",
+            "reaction_template": "[#8:1]-[C:2](=[O;D1;H0:3])-[CH;D3;+0:4]1-[CH2;D2;+0:10]-[CH2;D2;+0:8]-[C;H0;D3;+0:7](-[C;D1;H3:6])=[CH;D2;+0:9]-[CH2;D2;+0:5]-1>>[#8:1]-[C:2](=[O;D1;H0:3])-[CH;D2;+0:4]=[CH2;D1;+0:5].[C;D1;H3:6]-[C;H0;D3;+0:7](=[CH2;D1;+0:8])-[CH;D2;+0:9]=[CH2;D1;+0:10]",
+            "reaction_condition": [
+              "heat"
+            ],
+            "step_score": 2.5,
+            "reaction_type": "Diels-Alder cycloaddition"
+          },
+          {
+            "step_number": 3,
+            "target_smiles": "C=CC(=C)C",
+            "expanded_smiles": "C=C(C)Br.[Li][Cu](C=C)C=C",
+            "reaction_template": "[C;D1;H3:2]-[C;H0;D3;+0:1](=[CH2;D1;+0:4])-[CH;D2;+0:3]=[CH2;D1;+0:5]>>Br-[C;H0;D3;+0:1](-[C;D1;H3:2])=[CH2;D1;+0:3].C=[CH;D2;+0:4]-[Cu](-[Li])-C=[CH2;D1;+0:5]",
+            "reaction_condition": [],
+            "step_score": 1.3333,
+            "reaction_type": "Cross-coupling (Gilman cuprate)"
+          }
+        ]
+      },
+      {
+        "route_rank": 3,
+        "route_score": 4.2333,
+        "steps": 3,
+        "leaf_reactants": [
+          {
+            "smiles": "CCl",
+            "in_stock": true,
+            "molecular_weight": 49.99
+          },
+          {
+            "smiles": "C=CC(=O)O",
+            "in_stock": true,
+            "molecular_weight": 72.02
+          },
+          {
+            "smiles": "C=C(C)Br",
+            "in_stock": true,
+            "molecular_weight": 119.96
+          },
+          {
+            "smiles": "[Li][Cu](C=C)C=C",
+            "in_stock": true,
+            "molecular_weight": 123.99
+          }
+        ],
+        "steps_history": [
+          {
+            "step_number": 1,
+            "target_smiles": "COC(=O)C1CC=C(C)CC1",
+            "expanded_smiles": "CC1=CCC(C(=O)O)CC1.CCl",
+            "reaction_template": "[C:2]-[O;H0;D2;+0:3]-[CH3;D1;+0:1]>>Cl-[CH3;D1;+0:1].[C:2]-[OH;D1;+0:3]",
+            "reaction_condition": [
+              "Base",
+              "Base"
+            ],
+            "step_score": 0.4,
+            "reaction_type": "Substitution"
+          },
+          {
+            "step_number": 2,
+            "target_smiles": "CC1=CCC(C(=O)O)CC1",
+            "expanded_smiles": "C=CC(=C)C.C=CC(=O)O",
+            "reaction_template": "[#8:1]-[C:2](=[O;D1;H0:3])-[CH;D3;+0:4]1-[CH2;D2;+0:10]-[CH2;D2;+0:8]-[C;H0;D3;+0:7](-[C;D1;H3:6])=[CH;D2;+0:9]-[CH2;D2;+0:5]-1>>[#8:1]-[C:2](=[O;D1;H0:3])-[CH;D2;+0:4]=[CH2;D1;+0:5].[C;D1;H3:6]-[C;H0;D3;+0:7](=[CH2;D1;+0:8])-[CH;D2;+0:9]=[CH2;D1;+0:10]",
+            "reaction_condition": [
+              "heat"
+            ],
+            "step_score": 2.5,
+            "reaction_type": "Diels-Alder cycloaddition"
+          },
+          {
+            "step_number": 3,
+            "target_smiles": "C=CC(=C)C",
+            "expanded_smiles": "C=C(C)Br.[Li][Cu](C=C)C=C",
+            "reaction_template": "[C;D1;H3:2]-[C;H0;D3;+0:1](=[CH2;D1;+0:4])-[CH;D2;+0:3]=[CH2;D1;+0:5]>>Br-[C;H0;D3;+0:1](-[C;D1;H3:2])=[CH2;D1;+0:3].C=[CH;D2;+0:4]-[Cu](-[Li])-C=[CH2;D1;+0:5]",
+            "reaction_condition": [],
+            "step_score": 1.3333,
+            "reaction_type": "Cross-coupling (Gilman cuprate)"
+          }
+        ]
+      },
+      {
+        "route_rank": 4,
+        "route_score": 4.2333,
+        "steps": 3,
+        "leaf_reactants": [
+          {
+            "smiles": "CI",
+            "in_stock": true,
+            "molecular_weight": 141.93
+          },
+          {
+            "smiles": "C=CC(=O)O",
+            "in_stock": true,
+            "molecular_weight": 72.02
+          },
+          {
+            "smiles": "C=C(C)Br",
+            "in_stock": true,
+            "molecular_weight": 119.96
+          },
+          {
+            "smiles": "[Li][Cu](C=C)C=C",
+            "in_stock": true,
+            "molecular_weight": 123.99
+          }
+        ],
+        "steps_history": [
+          {
+            "step_number": 1,
+            "target_smiles": "COC(=O)C1CC=C(C)CC1",
+            "expanded_smiles": "CC1=CCC(C(=O)O)CC1.CI",
+            "reaction_template": "[C:2]-[O;H0;D2;+0:3]-[CH3;D1;+0:1]>>I-[CH3;D1;+0:1].[C:2]-[OH;D1;+0:3]",
+            "reaction_condition": [
+              "Base",
+              "Base"
+            ],
+            "step_score": 0.4,
+            "reaction_type": "Substitution"
+          },
+          {
+            "step_number": 2,
+            "target_smiles": "CC1=CCC(C(=O)O)CC1",
+            "expanded_smiles": "C=CC(=C)C.C=CC(=O)O",
+            "reaction_template": "[#8:1]-[C:2](=[O;D1;H0:3])-[CH;D3;+0:4]1-[CH2;D2;+0:10]-[CH2;D2;+0:8]-[C;H0;D3;+0:7](-[C;D1;H3:6])=[CH;D2;+0:9]-[CH2;D2;+0:5]-1>>[#8:1]-[C:2](=[O;D1;H0:3])-[CH;D2;+0:4]=[CH2;D1;+0:5].[C;D1;H3:6]-[C;H0;D3;+0:7](=[CH2;D1;+0:8])-[CH;D2;+0:9]=[CH2;D1;+0:10]",
+            "reaction_condition": [
+              "heat"
+            ],
+            "step_score": 2.5,
+            "reaction_type": "Diels-Alder cycloaddition"
+          },
+          {
+            "step_number": 3,
+            "target_smiles": "C=CC(=C)C",
+            "expanded_smiles": "C=C(C)Br.[Li][Cu](C=C)C=C",
+            "reaction_template": "[C;D1;H3:2]-[C;H0;D3;+0:1](=[CH2;D1;+0:4])-[CH;D2;+0:3]=[CH2;D1;+0:5]>>Br-[C;H0;D3;+0:1](-[C;D1;H3:2])=[CH2;D1;+0:3].C=[CH;D2;+0:4]-[Cu](-[Li])-C=[CH2;D1;+0:5]",
+            "reaction_condition": [],
+            "step_score": 1.3333,
+            "reaction_type": "Cross-coupling (Gilman cuprate)"
+          }
+        ]
+      },
+      {
+        "route_rank": 5,
+        "route_score": 3.9444,
+        "steps": 3,
+        "leaf_reactants": [
+          {
+            "smiles": "CO",
+            "in_stock": true,
+            "molecular_weight": 32.03
+          },
+          {
+            "smiles": "C=CC(=O)O",
+            "in_stock": true,
+            "molecular_weight": 72.02
+          },
+          {
+            "smiles": "C=CC(C)=O",
+            "in_stock": true,
+            "molecular_weight": 70.04
+          },
+          {
+            "smiles": "CBr",
+            "in_stock": true,
+            "molecular_weight": 93.94
+          }
+        ],
+        "steps_history": [
+          {
+            "step_number": 1,
+            "target_smiles": "COC(=O)C1CC=C(C)CC1",
+            "expanded_smiles": "CC1=CCC(C(=O)O)CC1.CO",
+            "reaction_template": "[C:2]-[C;H0;D3;+0:1](=[O;D1;H0:3])-[O;H0;D2;+0:5]-[C;D1;H3:4]>>O-[C;H0;D3;+0:1](-[C:2])=[O;D1;H0:3].[C;D1;H3:4]-[OH;D1;+0:5]",
+            "reaction_condition": [
+              "H+"
+            ],
+            "step_score": 0.6444,
+            "reaction_type": "Esterification"
+          },
+          {
+            "step_number": 2,
+            "target_smiles": "CC1=CCC(C(=O)O)CC1",
+            "expanded_smiles": "C=CC(=C)C.C=CC(=O)O",
+            "reaction_template": "[#8:1]-[C:2](=[O;D1;H0:3])-[CH;D3;+0:4]1-[CH2;D2;+0:10]-[CH2;D2;+0:8]-[C;H0;D3;+0:7](-[C;D1;H3:6])=[CH;D2;+0:9]-[CH2;D2;+0:5]-1>>[#8:1]-[C:2](=[O;D1;H0:3])-[CH;D2;+0:4]=[CH2;D1;+0:5].[C;D1;H3:6]-[C;H0;D3;+0:7](=[CH2;D1;+0:8])-[CH;D2;+0:9]=[CH2;D1;+0:10]",
+            "reaction_condition": [
+              "heat"
+            ],
+            "step_score": 2.5,
+            "reaction_type": "Diels-Alder cycloaddition"
+          },
+          {
+            "step_number": 3,
+            "target_smiles": "C=CC(=C)C",
+            "expanded_smiles": "C=CC(C)=O.CBr",
+            "reaction_template": "[C:3]-[C;H0;D3;+0:2](-[C;D1;H3:4])=[CH2;D1;+0:1]>>Br-[CH3;D1;+0:1].O=[C;H0;D3;+0:2](-[C:3])-[C;D1;H3:4]",
+            "reaction_condition": [
+              "(1) Ph3P (2) base (Wittig reaction)"
+            ],
+            "step_score": 0.8,
+            "reaction_type": "Wittig reaction"
+          }
+        ]
+      },
+      {
+        "route_rank": 6,
+        "route_score": 3.7,
+        "steps": 3,
+        "leaf_reactants": [
+          {
+            "smiles": "CBr",
+            "in_stock": true,
+            "molecular_weight": 93.94
+          },
+          {
+            "smiles": "C=CC(=O)O",
+            "in_stock": true,
+            "molecular_weight": 72.02
+          },
+          {
+            "smiles": "C=CC(C)=O",
+            "in_stock": true,
+            "molecular_weight": 70.04
+          }
+        ],
+        "steps_history": [
+          {
+            "step_number": 1,
+            "target_smiles": "COC(=O)C1CC=C(C)CC1",
+            "expanded_smiles": "CBr.CC1=CCC(C(=O)O)CC1",
+            "reaction_template": "[C:2]-[O;H0;D2;+0:3]-[CH3;D1;+0:1]>>Br-[CH3;D1;+0:1].[C:2]-[OH;D1;+0:3]",
+            "reaction_condition": [
+              "Base",
+              "Base"
+            ],
+            "step_score": 0.4,
+            "reaction_type": "Substitution"
+          },
+          {
+            "step_number": 2,
+            "target_smiles": "CC1=CCC(C(=O)O)CC1",
+            "expanded_smiles": "C=CC(=C)C.C=CC(=O)O",
+            "reaction_template": "[#8:1]-[C:2](=[O;D1;H0:3])-[CH;D3;+0:4]1-[CH2;D2;+0:10]-[CH2;D2;+0:8]-[C;H0;D3;+0:7](-[C;D1;H3:6])=[CH;D2;+0:9]-[CH2;D2;+0:5]-1>>[#8:1]-[C:2](=[O;D1;H0:3])-[CH;D2;+0:4]=[CH2;D1;+0:5].[C;D1;H3:6]-[C;H0;D3;+0:7](=[CH2;D1;+0:8])-[CH;D2;+0:9]=[CH2;D1;+0:10]",
+            "reaction_condition": [
+              "heat"
+            ],
+            "step_score": 2.5,
+            "reaction_type": "Diels-Alder cycloaddition"
+          },
+          {
+            "step_number": 3,
+            "target_smiles": "C=CC(=C)C",
+            "expanded_smiles": "C=CC(C)=O.CBr",
+            "reaction_template": "[C:3]-[C;H0;D3;+0:2](-[C;D1;H3:4])=[CH2;D1;+0:1]>>Br-[CH3;D1;+0:1].O=[C;H0;D3;+0:2](-[C:3])-[C;D1;H3:4]",
+            "reaction_condition": [
+              "(1) Ph3P (2) base (Wittig reaction)"
+            ],
+            "step_score": 0.8,
+            "reaction_type": "Wittig reaction"
+          }
+        ]
+      },
+      {
+        "route_rank": 7,
+        "route_score": 3.7,
+        "steps": 3,
+        "leaf_reactants": [
+          {
+            "smiles": "CCl",
+            "in_stock": true,
+            "molecular_weight": 49.99
+          },
+          {
+            "smiles": "C=CC(=O)O",
+            "in_stock": true,
+            "molecular_weight": 72.02
+          },
+          {
+            "smiles": "C=CC(C)=O",
+            "in_stock": true,
+            "molecular_weight": 70.04
+          },
+          {
+            "smiles": "CBr",
+            "in_stock": true,
+            "molecular_weight": 93.94
+          }
+        ],
+        "steps_history": [
+          {
+            "step_number": 1,
+            "target_smiles": "COC(=O)C1CC=C(C)CC1",
+            "expanded_smiles": "CC1=CCC(C(=O)O)CC1.CCl",
+            "reaction_template": "[C:2]-[O;H0;D2;+0:3]-[CH3;D1;+0:1]>>Cl-[CH3;D1;+0:1].[C:2]-[OH;D1;+0:3]",
+            "reaction_condition": [
+              "Base",
+              "Base"
+            ],
+            "step_score": 0.4,
+            "reaction_type": "Substitution"
+          },
+          {
+            "step_number": 2,
+            "target_smiles": "CC1=CCC(C(=O)O)CC1",
+            "expanded_smiles": "C=CC(=C)C.C=CC(=O)O",
+            "reaction_template": "[#8:1]-[C:2](=[O;D1;H0:3])-[CH;D3;+0:4]1-[CH2;D2;+0:10]-[CH2;D2;+0:8]-[C;H0;D3;+0:7](-[C;D1;H3:6])=[CH;D2;+0:9]-[CH2;D2;+0:5]-1>>[#8:1]-[C:2](=[O;D1;H0:3])-[CH;D2;+0:4]=[CH2;D1;+0:5].[C;D1;H3:6]-[C;H0;D3;+0:7](=[CH2;D1;+0:8])-[CH;D2;+0:9]=[CH2;D1;+0:10]",
+            "reaction_condition": [
+              "heat"
+            ],
+            "step_score": 2.5,
+            "reaction_type": "Diels-Alder cycloaddition"
+          },
+          {
+            "step_number": 3,
+            "target_smiles": "C=CC(=C)C",
+            "expanded_smiles": "C=CC(C)=O.CBr",
+            "reaction_template": "[C:3]-[C;H0;D3;+0:2](-[C;D1;H3:4])=[CH2;D1;+0:1]>>Br-[CH3;D1;+0:1].O=[C;H0;D3;+0:2](-[C:3])-[C;D1;H3:4]",
+            "reaction_condition": [
+              "(1) Ph3P (2) base (Wittig reaction)"
+            ],
+            "step_score": 0.8,
+            "reaction_type": "Wittig reaction"
+          }
+        ]
+      },
+      {
+        "route_rank": 8,
+        "route_score": 3.7,
+        "steps": 3,
+        "leaf_reactants": [
+          {
+            "smiles": "CI",
+            "in_stock": true,
+            "molecular_weight": 141.93
+          },
+          {
+            "smiles": "C=CC(=O)O",
+            "in_stock": true,
+            "molecular_weight": 72.02
+          },
+          {
+            "smiles": "C=CC(C)=O",
+            "in_stock": true,
+            "molecular_weight": 70.04
+          },
+          {
+            "smiles": "CBr",
+            "in_stock": true,
+            "molecular_weight": 93.94
+          }
+        ],
+        "steps_history": [
+          {
+            "step_number": 1,
+            "target_smiles": "COC(=O)C1CC=C(C)CC1",
+            "expanded_smiles": "CC1=CCC(C(=O)O)CC1.CI",
+            "reaction_template": "[C:2]-[O;H0;D2;+0:3]-[CH3;D1;+0:1]>>I-[CH3;D1;+0:1].[C:2]-[OH;D1;+0:3]",
+            "reaction_condition": [
+              "Base",
+              "Base"
+            ],
+            "step_score": 0.4,
+            "reaction_type": "Substitution"
+          },
+          {
+            "step_number": 2,
+            "target_smiles": "CC1=CCC(C(=O)O)CC1",
+            "expanded_smiles": "C=CC(=C)C.C=CC(=O)O",
+            "reaction_template": "[#8:1]-[C:2](=[O;D1;H0:3])-[CH;D3;+0:4]1-[CH2;D2;+0:10]-[CH2;D2;+0:8]-[C;H0;D3;+0:7](-[C;D1;H3:6])=[CH;D2;+0:9]-[CH2;D2;+0:5]-1>>[#8:1]-[C:2](=[O;D1;H0:3])-[CH;D2;+0:4]=[CH2;D1;+0:5].[C;D1;H3:6]-[C;H0;D3;+0:7](=[CH2;D1;+0:8])-[CH;D2;+0:9]=[CH2;D1;+0:10]",
+            "reaction_condition": [
+              "heat"
+            ],
+            "step_score": 2.5,
+            "reaction_type": "Diels-Alder cycloaddition"
+          },
+          {
+            "step_number": 3,
+            "target_smiles": "C=CC(=C)C",
+            "expanded_smiles": "C=CC(C)=O.CBr",
+            "reaction_template": "[C:3]-[C;H0;D3;+0:2](-[C;D1;H3:4])=[CH2;D1;+0:1]>>Br-[CH3;D1;+0:1].O=[C;H0;D3;+0:2](-[C:3])-[C;D1;H3:4]",
+            "reaction_condition": [
+              "(1) Ph3P (2) base (Wittig reaction)"
+            ],
+            "step_score": 0.8,
+            "reaction_type": "Wittig reaction"
+          }
+        ]
+      }
+    ]
+  }
+}

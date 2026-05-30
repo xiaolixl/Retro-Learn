@@ -1,0 +1,72 @@
+{
+  "status": "success",
+  "message": "Retrosynthesis completed. 3 route(s).",
+  "data": {
+    "target_molecule": {
+      "smiles": "CC(=O)C=C(C)C",
+      "molecular_weight": 98.07,
+      "in_stock": false
+    },
+    "retrosynthesis_routes": [
+      {
+        "route_rank": 1,
+        "score": 0.4667,
+        "reaction_template": "[C;D1;H3:2]-[C;H0;D3;+0:1](-[C;D1;H3:3])=[CH;D2;+0:4]-[C:5]=[O;D1;H0:6]>>O=[C;H0;D3;+0:1](-[C;D1;H3:2])-[C;D1;H3:3].[CH3;D1;+0:4]-[C:5]=[O;D1;H0:6]",
+        "reaction_condition": [
+          "NaOH",
+          "NaOH"
+        ],
+        "all_reactants_in_stock": false,
+        "reactants": [
+          {
+            "smiles": "CC(C)=O",
+            "molecular_weight": 58.04,
+            "in_stock": false
+          },
+          {
+            "smiles": "CC(C)=O",
+            "molecular_weight": 58.04,
+            "in_stock": false
+          }
+        ],
+        "reaction_type": "Aldol condensation"
+      },
+      {
+        "route_rank": 2,
+        "score": 0.0,
+        "reaction_template": "[C:1]-[C;H0;D3;+0:2](-[C;D1;H3:3])=[O;H0;D1;+0:4]>>[C:1]-[CH;D3;+0:2](-[C;D1;H3:3])-[OH;D1;+0:4]",
+        "reaction_condition": [
+          "KMnO4,OH-",
+          "CuCrO4"
+        ],
+        "all_reactants_in_stock": false,
+        "reactants": [
+          {
+            "smiles": "CC(C)=CC(C)O",
+            "molecular_weight": 100.09,
+            "in_stock": false
+          }
+        ],
+        "reaction_type": "Oxidation"
+      },
+      {
+        "route_rank": 3,
+        "score": 0.0,
+        "reaction_template": "[CH3;D1;+0:2]-[C:1]-[CH3;D1;+0:3]>>[C:1]1-[CH2;D2;+0:2]-[CH2;D2;+0:3]-1",
+        "reaction_condition": [
+          "H2,Ni,40 C or pd/C, 50 C"
+        ],
+        "all_reactants_in_stock": false,
+        "reactants": [
+          {
+            "smiles": "CC(=O)C=C1CC1",
+            "molecular_weight": 96.06,
+            "in_stock": false
+          }
+        ],
+        "reaction_type": "Catalytic hydrogenation"
+      }
+    ],
+    "mode": "single_step"
+  }
+}

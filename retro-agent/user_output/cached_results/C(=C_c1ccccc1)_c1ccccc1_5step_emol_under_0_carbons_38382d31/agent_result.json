@@ -1,0 +1,907 @@
+{
+  "status": "success",
+  "message": "Agent run completed.",
+  "reply_markdown": "## 1. Target Information\n- **Name:** trans-Stilbene  \n- **SMILES:** `C(=C/c1ccccc1)\\\\c1ccccc1`  \n- **Molecular weight:** 180.09 g/mol  \n- **In stock:** No  \n\n## 2. Result Summary\nThe planning result provides a **5‑step forward synthesis** from toluene to trans‑stilbene. The route is shown below in the synthetic (forward) direction with scores for each step.\n\n| Step | Reactants | Conditions | Product | Score |\n|------|-----------|------------|---------|-------|\n| 1 | Toluene + Br₂ | Br₂, hv | Benzyl bromide | 1.6 |\n| 2 | Benzyl bromide + Mg | Mg, THF | Benzylmagnesium bromide | 0.2 |\n| 3 | Benzyl bromide + Benzylmagnesium bromide | Ether or THF | 1,2‑Diphenylethane (bibenzyl) | 1.4 |\n| 4 | 1,2‑Diphenylethane + Br₂ | Br₂, hv | 1‑Bromo‑1,2‑diphenylethane | 0.2 |\n| 5 | 1‑Bromo‑1,2‑diphenylethane | CH₃CH₂ONa (sodium ethoxide) | **trans‑Stilbene** | 0.0 |\n\n**Overall route score:** 3.4 (out of 5, unnormalized sum of step scores)\n\n## 3. Key Observations\n- **Preferred reactant matched:** Toluene (`Cc1ccccc1`) appears as the leaf reactant in step 1 and is listed as **in stock**.\n- **Stock status of other reactants:**\n  - Br₂ – not in stock (needs procurement or preparation)\n  - Mg – not in stock\n- **Reaction type highlights:** Step 3 is a **Grignard coupling** (benzyl bromide + benzyl Grignard) to build the C–C bond. Step 5 is an **elimination** (dehydrobromination) to form the alkene.\n\n## 4. Disclaimer\n⚠️ The routes above are computational suggestions, not experimentally validated. Expert review is required before experimental use.",
+  "parsed_request": {
+    "language": "en",
+    "step_count": 5,
+    "top_k": null,
+    "target_smiles": "C1=CC=C(C=C1)/C=C/C2=CC=CC=C2",
+    "target_name": "stilbene",
+    "preferred_reactants": [
+      "Cc1ccccc1"
+    ],
+    "preferred_reactant_names": [
+      "toluene"
+    ],
+    "database": "emol_under_0_carbons",
+    "weights": null,
+    "needs_clarification": false,
+    "clarification_question": null,
+    "summary_of_request": "Synthesize trans-stilbene from toluene using retrosynthesis."
+  },
+  "resolved_request": {
+    "language": "en",
+    "step_count": 5,
+    "top_k": 5,
+    "target_smiles": "C(=C/c1ccccc1)\\c1ccccc1",
+    "preferred_reactants": [
+      "Cc1ccccc1"
+    ],
+    "database": "emol_under_0_carbons",
+    "weights": [
+      0.1,
+      0.2,
+      0.5,
+      0.0
+    ],
+    "summary_of_request": "Synthesize trans-stilbene from toluene using retrosynthesis.",
+    "resolution_notes": [
+      "target_source=llm"
+    ]
+  },
+  "planning_result": {
+    "status": "success",
+    "message": "Found 10 multi-step route(s).",
+    "data": {
+      "target_molecule": {
+        "smiles": "C(=C/c1ccccc1)\\c1ccccc1",
+        "molecular_weight": 180.09,
+        "in_stock": false
+      },
+      "mode": "multi_step",
+      "recommended_route": {
+        "actual_steps": 5,
+        "route_score": 3.4,
+        "leaf_reactants": [
+          {
+            "smiles": "BrBr",
+            "in_stock": false,
+            "molecular_weight": 157.84
+          },
+          {
+            "smiles": "[Mg]",
+            "in_stock": false,
+            "molecular_weight": 23.99
+          },
+          {
+            "smiles": "Cc1ccccc1",
+            "in_stock": true,
+            "molecular_weight": 92.06
+          }
+        ],
+        "steps": [
+          {
+            "step_number": 1,
+            "target_smiles": "C(=C/c1ccccc1)\\c1ccccc1",
+            "expanded_smiles": "BrC(Cc1ccccc1)c1ccccc1",
+            "reaction_template": "[c:4]/[CH;D2;+0:3]=[CH;D2;+0:1]/[c:2]>>Br-[CH;D3;+0:1](-[c:2])-[CH2;D2;+0:3]-[c:4]",
+            "reaction_condition": [
+              "CH3CH2ONa"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Elimination"
+          },
+          {
+            "step_number": 2,
+            "target_smiles": "BrC(Cc1ccccc1)c1ccccc1",
+            "expanded_smiles": "BrBr.c1ccc(CCc2ccccc2)cc1",
+            "reaction_template": "[Br;H0;D1;+0:1]-[CH;D3;+0:3](-[C:2])-[c:4]>>Br-[Br;H0;D1;+0:1].[C:2]-[CH2;D2;+0:3]-[c:4]",
+            "reaction_condition": [
+              "Br2, hv"
+            ],
+            "step_score": 0.2,
+            "reaction_type": "Halogenation"
+          },
+          {
+            "step_number": 3,
+            "target_smiles": "c1ccc(CCc2ccccc2)cc1",
+            "expanded_smiles": "BrCc1ccccc1.Br[Mg]Cc1ccccc1",
+            "reaction_template": "[c:2]-[CH2;D2;+0:1]-[CH2;D2;+0:3]-[c:4]>>Br-[CH2;D2;+0:1]-[c:2].Br-[Mg]-[CH2;D2;+0:3]-[c:4]",
+            "reaction_condition": [
+              "ether or THF"
+            ],
+            "step_score": 1.4,
+            "reaction_type": "Substitution (SN2)"
+          },
+          {
+            "step_number": 4,
+            "target_smiles": "Br[Mg]Cc1ccccc1",
+            "expanded_smiles": "BrCc1ccccc1.[Mg]",
+            "reaction_template": "[Br;H0;D1;+0:1]-[Mg;H0;D2;+0:4]-[CH2;D2;+0:2]-[c:3]>>[Br;H0;D1;+0:1]-[CH2;D2;+0:2]-[c:3].[Mg;H0;D0;+0:4]",
+            "reaction_condition": [
+              "Mg, THF"
+            ],
+            "step_score": 0.2,
+            "reaction_type": "Grignard formation"
+          },
+          {
+            "step_number": 5,
+            "target_smiles": "BrCc1ccccc1",
+            "expanded_smiles": "BrBr.Cc1ccccc1",
+            "reaction_template": "[Br;H0;D1;+0:1]-[CH2;D2;+0:2]-[c:3]>>Br-[Br;H0;D1;+0:1].[CH3;D1;+0:2]-[c:3]",
+            "reaction_condition": [
+              "Br2, hv"
+            ],
+            "step_score": 1.6,
+            "reaction_type": "Halogenation"
+          }
+        ]
+      },
+      "all_routes": [
+        {
+          "route_rank": 1,
+          "route_score": 3.4,
+          "steps": 5,
+          "leaf_reactants": [
+            {
+              "smiles": "BrBr",
+              "in_stock": false,
+              "molecular_weight": 157.84
+            },
+            {
+              "smiles": "[Mg]",
+              "in_stock": false,
+              "molecular_weight": 23.99
+            },
+            {
+              "smiles": "Cc1ccccc1",
+              "in_stock": true,
+              "molecular_weight": 92.06
+            }
+          ],
+          "steps_history": [
+            {
+              "step_number": 1,
+              "target_smiles": "C(=C/c1ccccc1)\\c1ccccc1",
+              "expanded_smiles": "BrC(Cc1ccccc1)c1ccccc1",
+              "reaction_template": "[c:4]/[CH;D2;+0:3]=[CH;D2;+0:1]/[c:2]>>Br-[CH;D3;+0:1](-[c:2])-[CH2;D2;+0:3]-[c:4]",
+              "reaction_condition": [
+                "CH3CH2ONa"
+              ],
+              "step_score": 0.0,
+              "reaction_type": "Elimination"
+            },
+            {
+              "step_number": 2,
+              "target_smiles": "BrC(Cc1ccccc1)c1ccccc1",
+              "expanded_smiles": "BrBr.c1ccc(CCc2ccccc2)cc1",
+              "reaction_template": "[Br;H0;D1;+0:1]-[CH;D3;+0:3](-[C:2])-[c:4]>>Br-[Br;H0;D1;+0:1].[C:2]-[CH2;D2;+0:3]-[c:4]",
+              "reaction_condition": [
+                "Br2, hv"
+              ],
+              "step_score": 0.2,
+              "reaction_type": "Halogenation"
+            },
+            {
+              "step_number": 3,
+              "target_smiles": "c1ccc(CCc2ccccc2)cc1",
+              "expanded_smiles": "BrCc1ccccc1.Br[Mg]Cc1ccccc1",
+              "reaction_template": "[c:2]-[CH2;D2;+0:1]-[CH2;D2;+0:3]-[c:4]>>Br-[CH2;D2;+0:1]-[c:2].Br-[Mg]-[CH2;D2;+0:3]-[c:4]",
+              "reaction_condition": [
+                "ether or THF"
+              ],
+              "step_score": 1.4,
+              "reaction_type": "Substitution (SN2)"
+            },
+            {
+              "step_number": 4,
+              "target_smiles": "Br[Mg]Cc1ccccc1",
+              "expanded_smiles": "BrCc1ccccc1.[Mg]",
+              "reaction_template": "[Br;H0;D1;+0:1]-[Mg;H0;D2;+0:4]-[CH2;D2;+0:2]-[c:3]>>[Br;H0;D1;+0:1]-[CH2;D2;+0:2]-[c:3].[Mg;H0;D0;+0:4]",
+              "reaction_condition": [
+                "Mg, THF"
+              ],
+              "step_score": 0.2,
+              "reaction_type": "Grignard formation"
+            },
+            {
+              "step_number": 5,
+              "target_smiles": "BrCc1ccccc1",
+              "expanded_smiles": "BrBr.Cc1ccccc1",
+              "reaction_template": "[Br;H0;D1;+0:1]-[CH2;D2;+0:2]-[c:3]>>Br-[Br;H0;D1;+0:1].[CH3;D1;+0:2]-[c:3]",
+              "reaction_condition": [
+                "Br2, hv"
+              ],
+              "step_score": 1.6,
+              "reaction_type": "Halogenation"
+            }
+          ]
+        },
+        {
+          "route_rank": 2,
+          "route_score": 3.2,
+          "steps": 4,
+          "leaf_reactants": [
+            {
+              "smiles": "BrBr",
+              "in_stock": false,
+              "molecular_weight": 157.84
+            },
+            {
+              "smiles": "Cc1ccccc1",
+              "in_stock": true,
+              "molecular_weight": 92.06
+            }
+          ],
+          "steps_history": [
+            {
+              "step_number": 1,
+              "target_smiles": "C(=C/c1ccccc1)\\c1ccccc1",
+              "expanded_smiles": "BrC(Cc1ccccc1)c1ccccc1",
+              "reaction_template": "[c:4]/[CH;D2;+0:3]=[CH;D2;+0:1]/[c:2]>>Br-[CH;D3;+0:1](-[c:2])-[CH2;D2;+0:3]-[c:4]",
+              "reaction_condition": [
+                "CH3CH2ONa"
+              ],
+              "step_score": 0.0,
+              "reaction_type": "Elimination"
+            },
+            {
+              "step_number": 2,
+              "target_smiles": "BrC(Cc1ccccc1)c1ccccc1",
+              "expanded_smiles": "BrBr.c1ccc(CCc2ccccc2)cc1",
+              "reaction_template": "[Br;H0;D1;+0:1]-[CH;D3;+0:3](-[C:2])-[c:4]>>Br-[Br;H0;D1;+0:1].[C:2]-[CH2;D2;+0:3]-[c:4]",
+              "reaction_condition": [
+                "Br2, hv"
+              ],
+              "step_score": 0.2,
+              "reaction_type": "Halogenation"
+            },
+            {
+              "step_number": 3,
+              "target_smiles": "c1ccc(CCc2ccccc2)cc1",
+              "expanded_smiles": "BrCc1ccccc1.BrCc1ccccc1",
+              "reaction_template": "[c:2]-[CH2;D2;+0:1]-[CH2;D2;+0:3]-[c:4]>>Br-[CH2;D2;+0:1]-[c:2].Br-[CH2;D2;+0:3]-[c:4]",
+              "reaction_condition": [
+                "Mg, THF (coupling of Grignard reagents)"
+              ],
+              "step_score": 1.4,
+              "reaction_type": "Wurtz coupling"
+            },
+            {
+              "step_number": 4,
+              "target_smiles": "BrCc1ccccc1",
+              "expanded_smiles": "BrBr.Cc1ccccc1",
+              "reaction_template": "[Br;H0;D1;+0:1]-[CH2;D2;+0:2]-[c:3]>>Br-[Br;H0;D1;+0:1].[CH3;D1;+0:2]-[c:3]",
+              "reaction_condition": [
+                "Br2, hv"
+              ],
+              "step_score": 1.6,
+              "reaction_type": "Halogenation"
+            }
+          ]
+        },
+        {
+          "route_rank": 3,
+          "route_score": 1.9667,
+          "steps": 5,
+          "leaf_reactants": [
+            {
+              "smiles": "BrBr",
+              "in_stock": false,
+              "molecular_weight": 157.84
+            },
+            {
+              "smiles": "ClCCc1ccccc1",
+              "in_stock": false,
+              "molecular_weight": 140.04
+            },
+            {
+              "smiles": "O=S(=O)(O)O",
+              "in_stock": false,
+              "molecular_weight": 97.97
+            },
+            {
+              "smiles": "c1ccccc1",
+              "in_stock": false,
+              "molecular_weight": 78.05
+            }
+          ],
+          "steps_history": [
+            {
+              "step_number": 1,
+              "target_smiles": "C(=C/c1ccccc1)\\c1ccccc1",
+              "expanded_smiles": "O=S(=O)(O)c1ccc(/C=C/c2ccccc2)cc1",
+              "reaction_template": "[C:5]-[c:4]1:[c:3]:[c:2]:[cH;D2;+0:1]:[c:7]:[c:6]:1>>O-S(=O)(=O)-[c;H0;D3;+0:1]1:[c:2]:[c:3]:[c:4](-[C:5]):[c:6]:[c:7]:1",
+              "reaction_condition": [
+                "H3O+"
+              ],
+              "step_score": 0.0,
+              "reaction_type": "Hydrolysis"
+            },
+            {
+              "step_number": 2,
+              "target_smiles": "O=S(=O)(O)c1ccc(/C=C/c2ccccc2)cc1",
+              "expanded_smiles": "O=S(=O)(O)c1ccc(CC(Br)c2ccccc2)cc1",
+              "reaction_template": "[c:4]/[CH;D2;+0:3]=[CH;D2;+0:1]/[c:2]>>Br-[CH;D3;+0:1](-[c:2])-[CH2;D2;+0:3]-[c:4]",
+              "reaction_condition": [
+                "CH3CH2ONa"
+              ],
+              "step_score": 0.0,
+              "reaction_type": "Elimination"
+            },
+            {
+              "step_number": 3,
+              "target_smiles": "O=S(=O)(O)c1ccc(CC(Br)c2ccccc2)cc1",
+              "expanded_smiles": "ClCC(Br)c1ccccc1.O=S(=O)(O)c1ccccc1",
+              "reaction_template": "[C:2]-[CH2;D2;+0:1]-[c;H0;D3;+0:4](:[c:3]):[c:5]>>Cl-[CH2;D2;+0:1]-[C:2].[c:3]:[cH;D2;+0:4]:[c:5]",
+              "reaction_condition": [
+                "AlCl3"
+              ],
+              "step_score": 1.2667,
+              "reaction_type": "Friedel-Crafts alkylation"
+            },
+            {
+              "step_number": 4,
+              "target_smiles": "ClCC(Br)c1ccccc1",
+              "expanded_smiles": "BrBr.ClCCc1ccccc1",
+              "reaction_template": "[Br;H0;D1;+0:1]-[CH;D3;+0:3](-[C:2])-[c:4]>>Br-[Br;H0;D1;+0:1].[C:2]-[CH2;D2;+0:3]-[c:4]",
+              "reaction_condition": [
+                "Br2, hv"
+              ],
+              "step_score": 0.2,
+              "reaction_type": "Halogenation"
+            },
+            {
+              "step_number": 5,
+              "target_smiles": "O=S(=O)(O)c1ccccc1",
+              "expanded_smiles": "O=S(=O)(O)O.c1ccccc1",
+              "reaction_template": "[O;D1;H0:2]=[S;H0;D4;+0:1](-[O;D1;H1:3])(=[O;H0;D1;+0:4])-[c;H0;D3;+0:6](:[c:5]):[c:7]>>O=[S;H0;D4;+0:1](=[O;D1;H0:2])(-[O;D1;H1:3])-[OH;D1;+0:4].[c:5]:[cH;D2;+0:6]:[c:7]",
+              "reaction_condition": [
+                "H2SO4, 0-60 C",
+                "X2,conc. H2SO4"
+              ],
+              "step_score": 0.5,
+              "reaction_type": "Sulfonation"
+            }
+          ]
+        },
+        {
+          "route_rank": 4,
+          "route_score": 1.8,
+          "steps": 5,
+          "leaf_reactants": [
+            {
+              "smiles": "BrBr",
+              "in_stock": false,
+              "molecular_weight": 157.84
+            },
+            {
+              "smiles": "[Mg]",
+              "in_stock": false,
+              "molecular_weight": 23.99
+            },
+            {
+              "smiles": "O=S(=O)(O)c1ccc(CBr)cc1",
+              "in_stock": false,
+              "molecular_weight": 249.93
+            }
+          ],
+          "steps_history": [
+            {
+              "step_number": 1,
+              "target_smiles": "C(=C/c1ccccc1)\\c1ccccc1",
+              "expanded_smiles": "BrC(Cc1ccccc1)c1ccccc1",
+              "reaction_template": "[c:4]/[CH;D2;+0:3]=[CH;D2;+0:1]/[c:2]>>Br-[CH;D3;+0:1](-[c:2])-[CH2;D2;+0:3]-[c:4]",
+              "reaction_condition": [
+                "CH3CH2ONa"
+              ],
+              "step_score": 0.0,
+              "reaction_type": "Elimination"
+            },
+            {
+              "step_number": 2,
+              "target_smiles": "BrC(Cc1ccccc1)c1ccccc1",
+              "expanded_smiles": "BrBr.c1ccc(CCc2ccccc2)cc1",
+              "reaction_template": "[Br;H0;D1;+0:1]-[CH;D3;+0:3](-[C:2])-[c:4]>>Br-[Br;H0;D1;+0:1].[C:2]-[CH2;D2;+0:3]-[c:4]",
+              "reaction_condition": [
+                "Br2, hv"
+              ],
+              "step_score": 0.2,
+              "reaction_type": "Halogenation"
+            },
+            {
+              "step_number": 3,
+              "target_smiles": "c1ccc(CCc2ccccc2)cc1",
+              "expanded_smiles": "BrCc1ccccc1.Br[Mg]Cc1ccccc1",
+              "reaction_template": "[c:2]-[CH2;D2;+0:1]-[CH2;D2;+0:3]-[c:4]>>Br-[CH2;D2;+0:1]-[c:2].Br-[Mg]-[CH2;D2;+0:3]-[c:4]",
+              "reaction_condition": [
+                "ether or THF"
+              ],
+              "step_score": 1.4,
+              "reaction_type": "Substitution (SN2)"
+            },
+            {
+              "step_number": 4,
+              "target_smiles": "Br[Mg]Cc1ccccc1",
+              "expanded_smiles": "BrCc1ccccc1.[Mg]",
+              "reaction_template": "[Br;H0;D1;+0:1]-[Mg;H0;D2;+0:4]-[CH2;D2;+0:2]-[c:3]>>[Br;H0;D1;+0:1]-[CH2;D2;+0:2]-[c:3].[Mg;H0;D0;+0:4]",
+              "reaction_condition": [
+                "Mg, THF"
+              ],
+              "step_score": 0.2,
+              "reaction_type": "Grignard formation"
+            },
+            {
+              "step_number": 5,
+              "target_smiles": "BrCc1ccccc1",
+              "expanded_smiles": "O=S(=O)(O)c1ccc(CBr)cc1",
+              "reaction_template": "[C:5]-[c:4]1:[c:3]:[c:2]:[cH;D2;+0:1]:[c:7]:[c:6]:1>>O-S(=O)(=O)-[c;H0;D3;+0:1]1:[c:2]:[c:3]:[c:4](-[C:5]):[c:6]:[c:7]:1",
+              "reaction_condition": [
+                "H3O+"
+              ],
+              "step_score": 0.0,
+              "reaction_type": "Hydrolysis"
+            }
+          ]
+        },
+        {
+          "route_rank": 5,
+          "route_score": 1.8,
+          "steps": 5,
+          "leaf_reactants": [
+            {
+              "smiles": "BrBr",
+              "in_stock": false,
+              "molecular_weight": 157.84
+            },
+            {
+              "smiles": "BrCc1ccccc1",
+              "in_stock": false,
+              "molecular_weight": 169.97
+            },
+            {
+              "smiles": "O=S(=O)(O)c1ccc(CBr)cc1",
+              "in_stock": false,
+              "molecular_weight": 249.93
+            },
+            {
+              "smiles": "[Mg]",
+              "in_stock": false,
+              "molecular_weight": 23.99
+            }
+          ],
+          "steps_history": [
+            {
+              "step_number": 1,
+              "target_smiles": "C(=C/c1ccccc1)\\c1ccccc1",
+              "expanded_smiles": "BrC(Cc1ccccc1)c1ccccc1",
+              "reaction_template": "[c:4]/[CH;D2;+0:3]=[CH;D2;+0:1]/[c:2]>>Br-[CH;D3;+0:1](-[c:2])-[CH2;D2;+0:3]-[c:4]",
+              "reaction_condition": [
+                "CH3CH2ONa"
+              ],
+              "step_score": 0.0,
+              "reaction_type": "Elimination"
+            },
+            {
+              "step_number": 2,
+              "target_smiles": "BrC(Cc1ccccc1)c1ccccc1",
+              "expanded_smiles": "BrBr.c1ccc(CCc2ccccc2)cc1",
+              "reaction_template": "[Br;H0;D1;+0:1]-[CH;D3;+0:3](-[C:2])-[c:4]>>Br-[Br;H0;D1;+0:1].[C:2]-[CH2;D2;+0:3]-[c:4]",
+              "reaction_condition": [
+                "Br2, hv"
+              ],
+              "step_score": 0.2,
+              "reaction_type": "Halogenation"
+            },
+            {
+              "step_number": 3,
+              "target_smiles": "c1ccc(CCc2ccccc2)cc1",
+              "expanded_smiles": "BrCc1ccccc1.Br[Mg]Cc1ccccc1",
+              "reaction_template": "[c:2]-[CH2;D2;+0:1]-[CH2;D2;+0:3]-[c:4]>>Br-[CH2;D2;+0:1]-[c:2].Br-[Mg]-[CH2;D2;+0:3]-[c:4]",
+              "reaction_condition": [
+                "ether or THF"
+              ],
+              "step_score": 1.4,
+              "reaction_type": "Substitution (SN2)"
+            },
+            {
+              "step_number": 4,
+              "target_smiles": "Br[Mg]Cc1ccccc1",
+              "expanded_smiles": "O=S(=O)(O)c1ccc(C[Mg]Br)cc1",
+              "reaction_template": "[C:5]-[c:4]1:[c:3]:[c:2]:[cH;D2;+0:1]:[c:7]:[c:6]:1>>O-S(=O)(=O)-[c;H0;D3;+0:1]1:[c:2]:[c:3]:[c:4](-[C:5]):[c:6]:[c:7]:1",
+              "reaction_condition": [
+                "H3O+"
+              ],
+              "step_score": 0.0,
+              "reaction_type": "Hydrolysis"
+            },
+            {
+              "step_number": 5,
+              "target_smiles": "O=S(=O)(O)c1ccc(C[Mg]Br)cc1",
+              "expanded_smiles": "O=S(=O)(O)c1ccc(CBr)cc1.[Mg]",
+              "reaction_template": "[Br;H0;D1;+0:1]-[Mg;H0;D2;+0:4]-[CH2;D2;+0:2]-[c:3]>>[Br;H0;D1;+0:1]-[CH2;D2;+0:2]-[c:3].[Mg;H0;D0;+0:4]",
+              "reaction_condition": [
+                "Mg, THF"
+              ],
+              "step_score": 0.2,
+              "reaction_type": "Grignard formation"
+            }
+          ]
+        },
+        {
+          "route_rank": 6,
+          "route_score": 1.8,
+          "steps": 5,
+          "leaf_reactants": [
+            {
+              "smiles": "BrBr",
+              "in_stock": false,
+              "molecular_weight": 157.84
+            },
+            {
+              "smiles": "Cc1ccc(S(=O)(=O)O)cc1",
+              "in_stock": false,
+              "molecular_weight": 172.02
+            }
+          ],
+          "steps_history": [
+            {
+              "step_number": 1,
+              "target_smiles": "C(=C/c1ccccc1)\\c1ccccc1",
+              "expanded_smiles": "BrC(Cc1ccccc1)c1ccccc1",
+              "reaction_template": "[c:4]/[CH;D2;+0:3]=[CH;D2;+0:1]/[c:2]>>Br-[CH;D3;+0:1](-[c:2])-[CH2;D2;+0:3]-[c:4]",
+              "reaction_condition": [
+                "CH3CH2ONa"
+              ],
+              "step_score": 0.0,
+              "reaction_type": "Elimination"
+            },
+            {
+              "step_number": 2,
+              "target_smiles": "BrC(Cc1ccccc1)c1ccccc1",
+              "expanded_smiles": "BrBr.c1ccc(CCc2ccccc2)cc1",
+              "reaction_template": "[Br;H0;D1;+0:1]-[CH;D3;+0:3](-[C:2])-[c:4]>>Br-[Br;H0;D1;+0:1].[C:2]-[CH2;D2;+0:3]-[c:4]",
+              "reaction_condition": [
+                "Br2, hv"
+              ],
+              "step_score": 0.2,
+              "reaction_type": "Halogenation"
+            },
+            {
+              "step_number": 3,
+              "target_smiles": "c1ccc(CCc2ccccc2)cc1",
+              "expanded_smiles": "BrCc1ccccc1.BrCc1ccccc1",
+              "reaction_template": "[c:2]-[CH2;D2;+0:1]-[CH2;D2;+0:3]-[c:4]>>Br-[CH2;D2;+0:1]-[c:2].Br-[CH2;D2;+0:3]-[c:4]",
+              "reaction_condition": [
+                "Mg, THF (coupling of Grignard reagents)"
+              ],
+              "step_score": 1.4,
+              "reaction_type": "Wurtz coupling"
+            },
+            {
+              "step_number": 4,
+              "target_smiles": "BrCc1ccccc1",
+              "expanded_smiles": "O=S(=O)(O)c1ccc(CBr)cc1",
+              "reaction_template": "[C:5]-[c:4]1:[c:3]:[c:2]:[cH;D2;+0:1]:[c:7]:[c:6]:1>>O-S(=O)(=O)-[c;H0;D3;+0:1]1:[c:2]:[c:3]:[c:4](-[C:5]):[c:6]:[c:7]:1",
+              "reaction_condition": [
+                "H3O+"
+              ],
+              "step_score": 0.0,
+              "reaction_type": "Hydrolysis"
+            },
+            {
+              "step_number": 5,
+              "target_smiles": "O=S(=O)(O)c1ccc(CBr)cc1",
+              "expanded_smiles": "BrBr.Cc1ccc(S(=O)(=O)O)cc1",
+              "reaction_template": "[Br;H0;D1;+0:1]-[CH2;D2;+0:2]-[c:3]>>Br-[Br;H0;D1;+0:1].[CH3;D1;+0:2]-[c:3]",
+              "reaction_condition": [
+                "Br2, hv"
+              ],
+              "step_score": 0.2,
+              "reaction_type": "Halogenation"
+            }
+          ]
+        },
+        {
+          "route_rank": 7,
+          "route_score": 1.4667,
+          "steps": 5,
+          "leaf_reactants": [
+            {
+              "smiles": "O=S(=O)(O)c1ccccc1",
+              "in_stock": false,
+              "molecular_weight": 158.0
+            },
+            {
+              "smiles": "BrBr",
+              "in_stock": false,
+              "molecular_weight": 157.84
+            },
+            {
+              "smiles": "O=S(=O)(O)c1ccc(CCCl)cc1",
+              "in_stock": false,
+              "molecular_weight": 220.0
+            }
+          ],
+          "steps_history": [
+            {
+              "step_number": 1,
+              "target_smiles": "C(=C/c1ccccc1)\\c1ccccc1",
+              "expanded_smiles": "O=S(=O)(O)c1ccc(/C=C/c2ccccc2)cc1",
+              "reaction_template": "[C:5]-[c:4]1:[c:3]:[c:2]:[cH;D2;+0:1]:[c:7]:[c:6]:1>>O-S(=O)(=O)-[c;H0;D3;+0:1]1:[c:2]:[c:3]:[c:4](-[C:5]):[c:6]:[c:7]:1",
+              "reaction_condition": [
+                "H3O+"
+              ],
+              "step_score": 0.0,
+              "reaction_type": "Hydrolysis"
+            },
+            {
+              "step_number": 2,
+              "target_smiles": "O=S(=O)(O)c1ccc(/C=C/c2ccccc2)cc1",
+              "expanded_smiles": "O=S(=O)(O)c1ccc(CC(Br)c2ccccc2)cc1",
+              "reaction_template": "[c:4]/[CH;D2;+0:3]=[CH;D2;+0:1]/[c:2]>>Br-[CH;D3;+0:1](-[c:2])-[CH2;D2;+0:3]-[c:4]",
+              "reaction_condition": [
+                "CH3CH2ONa"
+              ],
+              "step_score": 0.0,
+              "reaction_type": "Elimination"
+            },
+            {
+              "step_number": 3,
+              "target_smiles": "O=S(=O)(O)c1ccc(CC(Br)c2ccccc2)cc1",
+              "expanded_smiles": "ClCC(Br)c1ccccc1.O=S(=O)(O)c1ccccc1",
+              "reaction_template": "[C:2]-[CH2;D2;+0:1]-[c;H0;D3;+0:4](:[c:3]):[c:5]>>Cl-[CH2;D2;+0:1]-[C:2].[c:3]:[cH;D2;+0:4]:[c:5]",
+              "reaction_condition": [
+                "AlCl3"
+              ],
+              "step_score": 1.2667,
+              "reaction_type": "Friedel-Crafts alkylation"
+            },
+            {
+              "step_number": 4,
+              "target_smiles": "ClCC(Br)c1ccccc1",
+              "expanded_smiles": "O=S(=O)(O)c1ccc(C(Br)CCl)cc1",
+              "reaction_template": "[C:5]-[c:4]1:[c:3]:[c:2]:[cH;D2;+0:1]:[c:7]:[c:6]:1>>O-S(=O)(=O)-[c;H0;D3;+0:1]1:[c:2]:[c:3]:[c:4](-[C:5]):[c:6]:[c:7]:1",
+              "reaction_condition": [
+                "H3O+"
+              ],
+              "step_score": 0.0,
+              "reaction_type": "Hydrolysis"
+            },
+            {
+              "step_number": 5,
+              "target_smiles": "O=S(=O)(O)c1ccc(C(Br)CCl)cc1",
+              "expanded_smiles": "BrBr.O=S(=O)(O)c1ccc(CCCl)cc1",
+              "reaction_template": "[Br;H0;D1;+0:1]-[CH;D3;+0:3](-[C:2])-[c:4]>>Br-[Br;H0;D1;+0:1].[C:2]-[CH2;D2;+0:3]-[c:4]",
+              "reaction_condition": [
+                "Br2, hv"
+              ],
+              "step_score": 0.2,
+              "reaction_type": "Halogenation"
+            }
+          ]
+        },
+        {
+          "route_rank": 8,
+          "route_score": 1.4,
+          "steps": 5,
+          "leaf_reactants": [
+            {
+              "smiles": "BrBr",
+              "in_stock": false,
+              "molecular_weight": 157.84
+            },
+            {
+              "smiles": "c1ccccc1",
+              "in_stock": false,
+              "molecular_weight": 78.05
+            },
+            {
+              "smiles": "O=C(Cl)CCl",
+              "in_stock": false,
+              "molecular_weight": 111.95
+            }
+          ],
+          "steps_history": [
+            {
+              "step_number": 1,
+              "target_smiles": "C(=C/c1ccccc1)\\c1ccccc1",
+              "expanded_smiles": "BrC(Cc1ccccc1)c1ccccc1",
+              "reaction_template": "[c:4]/[CH;D2;+0:3]=[CH;D2;+0:1]/[c:2]>>Br-[CH;D3;+0:1](-[c:2])-[CH2;D2;+0:3]-[c:4]",
+              "reaction_condition": [
+                "CH3CH2ONa"
+              ],
+              "step_score": 0.0,
+              "reaction_type": "Elimination"
+            },
+            {
+              "step_number": 2,
+              "target_smiles": "BrC(Cc1ccccc1)c1ccccc1",
+              "expanded_smiles": "BrBr.c1ccc(CCc2ccccc2)cc1",
+              "reaction_template": "[Br;H0;D1;+0:1]-[CH;D3;+0:3](-[C:2])-[c:4]>>Br-[Br;H0;D1;+0:1].[C:2]-[CH2;D2;+0:3]-[c:4]",
+              "reaction_condition": [
+                "Br2, hv"
+              ],
+              "step_score": 0.2,
+              "reaction_type": "Halogenation"
+            },
+            {
+              "step_number": 3,
+              "target_smiles": "c1ccc(CCc2ccccc2)cc1",
+              "expanded_smiles": "ClCCc1ccccc1.c1ccccc1",
+              "reaction_template": "[C:2]-[CH2;D2;+0:1]-[c;H0;D3;+0:4](:[c:3]):[c:5]>>Cl-[CH2;D2;+0:1]-[C:2].[c:3]:[cH;D2;+0:4]:[c:5]",
+              "reaction_condition": [
+                "AlCl3"
+              ],
+              "step_score": 0.7,
+              "reaction_type": "Friedel-Crafts alkylation"
+            },
+            {
+              "step_number": 4,
+              "target_smiles": "ClCCc1ccccc1",
+              "expanded_smiles": "O=C(CCl)c1ccccc1",
+              "reaction_template": "[C:2]-[CH2;D2;+0:1]-[c:3]>>O=[C;H0;D3;+0:1](-[C:2])-[c:3]",
+              "reaction_condition": [
+                "Zn-Hg, HCl"
+              ],
+              "step_score": 0.0,
+              "reaction_type": "Reduction (Clemmensen)"
+            },
+            {
+              "step_number": 5,
+              "target_smiles": "O=C(CCl)c1ccccc1",
+              "expanded_smiles": "O=C(Cl)CCl.c1ccccc1",
+              "reaction_template": "[C:2]-[C;H0;D3;+0:1](=[O;D1;H0:3])-[c;H0;D3;+0:5](:[c:4]):[c:6]>>Cl-[C;H0;D3;+0:1](-[C:2])=[O;D1;H0:3].[c:4]:[cH;D2;+0:5]:[c:6]",
+              "reaction_condition": [
+                "AlCl3"
+              ],
+              "step_score": 0.5,
+              "reaction_type": "Friedel-Crafts acylation"
+            }
+          ]
+        },
+        {
+          "route_rank": 9,
+          "route_score": 1.26,
+          "steps": 4,
+          "leaf_reactants": [
+            {
+              "smiles": "BrBr",
+              "in_stock": false,
+              "molecular_weight": 157.84
+            },
+            {
+              "smiles": "c1ccccc1",
+              "in_stock": false,
+              "molecular_weight": 78.05
+            },
+            {
+              "smiles": "ClCCCl",
+              "in_stock": false,
+              "molecular_weight": 97.97
+            }
+          ],
+          "steps_history": [
+            {
+              "step_number": 1,
+              "target_smiles": "C(=C/c1ccccc1)\\c1ccccc1",
+              "expanded_smiles": "BrC(Cc1ccccc1)c1ccccc1",
+              "reaction_template": "[c:4]/[CH;D2;+0:3]=[CH;D2;+0:1]/[c:2]>>Br-[CH;D3;+0:1](-[c:2])-[CH2;D2;+0:3]-[c:4]",
+              "reaction_condition": [
+                "CH3CH2ONa"
+              ],
+              "step_score": 0.0,
+              "reaction_type": "Elimination"
+            },
+            {
+              "step_number": 2,
+              "target_smiles": "BrC(Cc1ccccc1)c1ccccc1",
+              "expanded_smiles": "BrBr.c1ccc(CCc2ccccc2)cc1",
+              "reaction_template": "[Br;H0;D1;+0:1]-[CH;D3;+0:3](-[C:2])-[c:4]>>Br-[Br;H0;D1;+0:1].[C:2]-[CH2;D2;+0:3]-[c:4]",
+              "reaction_condition": [
+                "Br2, hv"
+              ],
+              "step_score": 0.2,
+              "reaction_type": "Halogenation"
+            },
+            {
+              "step_number": 3,
+              "target_smiles": "c1ccc(CCc2ccccc2)cc1",
+              "expanded_smiles": "ClCCc1ccccc1.c1ccccc1",
+              "reaction_template": "[C:2]-[CH2;D2;+0:1]-[c;H0;D3;+0:4](:[c:3]):[c:5]>>Cl-[CH2;D2;+0:1]-[C:2].[c:3]:[cH;D2;+0:4]:[c:5]",
+              "reaction_condition": [
+                "AlCl3"
+              ],
+              "step_score": 0.7,
+              "reaction_type": "Friedel-Crafts alkylation"
+            },
+            {
+              "step_number": 4,
+              "target_smiles": "ClCCc1ccccc1",
+              "expanded_smiles": "ClCCCl.c1ccccc1",
+              "reaction_template": "[C:2]-[CH2;D2;+0:1]-[c;H0;D3;+0:4](:[c:3]):[c:5]>>Cl-[CH2;D2;+0:1]-[C:2].[c:3]:[cH;D2;+0:4]:[c:5]",
+              "reaction_condition": [
+                "AlCl3"
+              ],
+              "step_score": 0.36,
+              "reaction_type": "Friedel-Crafts alkylation"
+            }
+          ]
+        },
+        {
+          "route_rank": 10,
+          "route_score": 0.9,
+          "steps": 5,
+          "leaf_reactants": [
+            {
+              "smiles": "BrBr",
+              "in_stock": false,
+              "molecular_weight": 157.84
+            },
+            {
+              "smiles": "c1ccccc1",
+              "in_stock": false,
+              "molecular_weight": 78.05
+            },
+            {
+              "smiles": "O=C(CCl)c1ccc(S(=O)(=O)O)cc1",
+              "in_stock": false,
+              "molecular_weight": 233.98
+            }
+          ],
+          "steps_history": [
+            {
+              "step_number": 1,
+              "target_smiles": "C(=C/c1ccccc1)\\c1ccccc1",
+              "expanded_smiles": "BrC(Cc1ccccc1)c1ccccc1",
+              "reaction_template": "[c:4]/[CH;D2;+0:3]=[CH;D2;+0:1]/[c:2]>>Br-[CH;D3;+0:1](-[c:2])-[CH2;D2;+0:3]-[c:4]",
+              "reaction_condition": [
+                "CH3CH2ONa"
+              ],
+              "step_score": 0.0,
+              "reaction_type": "Elimination"
+            },
+            {
+              "step_number": 2,
+              "target_smiles": "BrC(Cc1ccccc1)c1ccccc1",
+              "expanded_smiles": "BrBr.c1ccc(CCc2ccccc2)cc1",
+              "reaction_template": "[Br;H0;D1;+0:1]-[CH;D3;+0:3](-[C:2])-[c:4]>>Br-[Br;H0;D1;+0:1].[C:2]-[CH2;D2;+0:3]-[c:4]",
+              "reaction_condition": [
+                "Br2, hv"
+              ],
+              "step_score": 0.2,
+              "reaction_type": "Halogenation"
+            },
+            {
+              "step_number": 3,
+              "target_smiles": "c1ccc(CCc2ccccc2)cc1",
+              "expanded_smiles": "ClCCc1ccccc1.c1ccccc1",
+              "reaction_template": "[C:2]-[CH2;D2;+0:1]-[c;H0;D3;+0:4](:[c:3]):[c:5]>>Cl-[CH2;D2;+0:1]-[C:2].[c:3]:[cH;D2;+0:4]:[c:5]",
+              "reaction_condition": [
+                "AlCl3"
+              ],
+              "step_score": 0.7,
+              "reaction_type": "Friedel-Crafts alkylation"
+            },
+            {
+              "step_number": 4,
+              "target_smiles": "ClCCc1ccccc1",
+              "expanded_smiles": "O=C(CCl)c1ccccc1",
+              "reaction_template": "[C:2]-[CH2;D2;+0:1]-[c:3]>>O=[C;H0;D3;+0:1](-[C:2])-[c:3]",
+              "reaction_condition": [
+                "Zn-Hg, HCl"
+              ],
+              "step_score": 0.0,
+              "reaction_type": "Reduction (Clemmensen)"
+            },
+            {
+              "step_number": 5,
+              "target_smiles": "O=C(CCl)c1ccccc1",
+              "expanded_smiles": "O=C(CCl)c1ccc(S(=O)(=O)O)cc1",
+              "reaction_template": "[C:5]-[c:4]1:[c:3]:[c:2]:[cH;D2;+0:1]:[c:7]:[c:6]:1>>O-S(=O)(=O)-[c;H0;D3;+0:1]1:[c:2]:[c:3]:[c:4](-[C:5]):[c:6]:[c:7]:1",
+              "reaction_condition": [
+                "H3O+"
+              ],
+              "step_score": 0.0,
+              "reaction_type": "Hydrolysis"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "output_dir": "C:\\Users\\lixiao\\OneDrive\\文档\\PKU_2026\\RetroLearn逆合成项目\\Retro_Learn_Test\\retro-agent\\user_output\\agent_runs\\20260529_155120_4e2d6078",
+  "viz_html": "C:\\Users\\lixiao\\OneDrive\\文档\\PKU_2026\\RetroLearn逆合成项目\\Retro_Learn_Test\\retro-agent\\user_output\\agent_runs\\20260529_155120_4e2d6078\\route_view.html",
+  "cached": false
+}

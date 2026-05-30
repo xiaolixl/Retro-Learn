@@ -1,0 +1,769 @@
+{
+  "status": "success",
+  "message": "Found 9 multi-step route(s).",
+  "data": {
+    "target_molecule": {
+      "smiles": "CCC(C)(C)CC(C)=O",
+      "molecular_weight": 128.12,
+      "in_stock": false
+    },
+    "mode": "multi_step",
+    "recommended_route": {
+      "actual_steps": 4,
+      "route_score": 2.67,
+      "leaf_reactants": [
+        {
+          "smiles": "CC(C)=O",
+          "in_stock": true,
+          "molecular_weight": 58.04
+        },
+        {
+          "smiles": "[Cu]I",
+          "in_stock": true,
+          "molecular_weight": 189.83
+        },
+        {
+          "smiles": "CCI",
+          "in_stock": true,
+          "molecular_weight": 155.94
+        },
+        {
+          "smiles": "[Li]",
+          "in_stock": true,
+          "molecular_weight": 7.02
+        }
+      ],
+      "steps": [
+        {
+          "step_number": 1,
+          "target_smiles": "CCC(C)(C)CC(C)=O",
+          "expanded_smiles": "CC(=O)C=C(C)C.CC[Cu-]CC",
+          "reaction_template": "[C;D1;H3:3]-[C;H0;D4;+0:4](-[C;D1;H3:5])(-[CH2;D2;+0:1]-[C;D1;H3:2])-[CH2;D2;+0:6]-[C:7](-[C;D1;H3:8])=[O;D1;H0:9]>>C-C-[Cu-]-[CH2;D2;+0:1]-[C;D1;H3:2].[C;D1;H3:3]-[C;H0;D3;+0:4](-[C;D1;H3:5])=[CH;D2;+0:6]-[C:7](-[C;D1;H3:8])=[O;D1;H0:9]",
+          "reaction_condition": [
+            "1,4 addition"
+          ],
+          "step_score": 0.2571,
+          "reaction_type": "Conjugate addition"
+        },
+        {
+          "step_number": 2,
+          "target_smiles": "CC(=O)C=C(C)C",
+          "expanded_smiles": "CC(C)=O.CC(C)=O",
+          "reaction_template": "[C;D1;H3:2]-[C;H0;D3;+0:1](-[C;D1;H3:3])=[CH;D2;+0:4]-[C:5]=[O;D1;H0:6]>>O=[C;H0;D3;+0:1](-[C;D1;H3:2])-[C;D1;H3:3].[CH3;D1;+0:4]-[C:5]=[O;D1;H0:6]",
+          "reaction_condition": [
+            "NaOH",
+            "NaOH"
+          ],
+          "step_score": 1.8667,
+          "reaction_type": "Aldol condensation"
+        },
+        {
+          "step_number": 3,
+          "target_smiles": "CC[Cu-]CC",
+          "expanded_smiles": "[Cu]I.[Li]CC.[Li]CC",
+          "reaction_template": "[C;D1;H3:2]-[CH2;D2;+0:3]-[Cu-;H0;D2:1]-[CH2;D2;+0:5]-[C;D1;H3:4]>>I-[Cu;H0;D1;+0:1].[C;D1;H3:2]-[CH2;D2;+0:3]-[Li].[C;D1;H3:4]-[CH2;D2;+0:5]-[Li]",
+          "reaction_condition": [
+            "CuI"
+          ],
+          "step_score": 0.5462,
+          "reaction_type": "Organocopper formation"
+        },
+        {
+          "step_number": 4,
+          "target_smiles": "[Li]CC",
+          "expanded_smiles": "CCI.[Li]",
+          "reaction_template": "[C;D1;H3:2]-[CH2;D2;+0:1]-[Li;H0;D1;+0:3]>>I-[CH2;D2;+0:1]-[C;D1;H3:2].[Li;H0;D0;+0:3]",
+          "reaction_condition": [
+            "Li"
+          ],
+          "step_score": 0.0,
+          "reaction_type": "Substitution (metal-halogen exchange)"
+        }
+      ]
+    },
+    "all_routes": [
+      {
+        "route_rank": 1,
+        "route_score": 2.67,
+        "steps": 4,
+        "leaf_reactants": [
+          {
+            "smiles": "CC(C)=O",
+            "in_stock": true,
+            "molecular_weight": 58.04
+          },
+          {
+            "smiles": "[Cu]I",
+            "in_stock": true,
+            "molecular_weight": 189.83
+          },
+          {
+            "smiles": "CCI",
+            "in_stock": true,
+            "molecular_weight": 155.94
+          },
+          {
+            "smiles": "[Li]",
+            "in_stock": true,
+            "molecular_weight": 7.02
+          }
+        ],
+        "steps_history": [
+          {
+            "step_number": 1,
+            "target_smiles": "CCC(C)(C)CC(C)=O",
+            "expanded_smiles": "CC(=O)C=C(C)C.CC[Cu-]CC",
+            "reaction_template": "[C;D1;H3:3]-[C;H0;D4;+0:4](-[C;D1;H3:5])(-[CH2;D2;+0:1]-[C;D1;H3:2])-[CH2;D2;+0:6]-[C:7](-[C;D1;H3:8])=[O;D1;H0:9]>>C-C-[Cu-]-[CH2;D2;+0:1]-[C;D1;H3:2].[C;D1;H3:3]-[C;H0;D3;+0:4](-[C;D1;H3:5])=[CH;D2;+0:6]-[C:7](-[C;D1;H3:8])=[O;D1;H0:9]",
+            "reaction_condition": [
+              "1,4 addition"
+            ],
+            "step_score": 0.2571,
+            "reaction_type": "Conjugate addition"
+          },
+          {
+            "step_number": 2,
+            "target_smiles": "CC(=O)C=C(C)C",
+            "expanded_smiles": "CC(C)=O.CC(C)=O",
+            "reaction_template": "[C;D1;H3:2]-[C;H0;D3;+0:1](-[C;D1;H3:3])=[CH;D2;+0:4]-[C:5]=[O;D1;H0:6]>>O=[C;H0;D3;+0:1](-[C;D1;H3:2])-[C;D1;H3:3].[CH3;D1;+0:4]-[C:5]=[O;D1;H0:6]",
+            "reaction_condition": [
+              "NaOH",
+              "NaOH"
+            ],
+            "step_score": 1.8667,
+            "reaction_type": "Aldol condensation"
+          },
+          {
+            "step_number": 3,
+            "target_smiles": "CC[Cu-]CC",
+            "expanded_smiles": "[Cu]I.[Li]CC.[Li]CC",
+            "reaction_template": "[C;D1;H3:2]-[CH2;D2;+0:3]-[Cu-;H0;D2:1]-[CH2;D2;+0:5]-[C;D1;H3:4]>>I-[Cu;H0;D1;+0:1].[C;D1;H3:2]-[CH2;D2;+0:3]-[Li].[C;D1;H3:4]-[CH2;D2;+0:5]-[Li]",
+            "reaction_condition": [
+              "CuI"
+            ],
+            "step_score": 0.5462,
+            "reaction_type": "Organocopper formation"
+          },
+          {
+            "step_number": 4,
+            "target_smiles": "[Li]CC",
+            "expanded_smiles": "CCI.[Li]",
+            "reaction_template": "[C;D1;H3:2]-[CH2;D2;+0:1]-[Li;H0;D1;+0:3]>>I-[CH2;D2;+0:1]-[C;D1;H3:2].[Li;H0;D0;+0:3]",
+            "reaction_condition": [
+              "Li"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Substitution (metal-halogen exchange)"
+          }
+        ]
+      },
+      {
+        "route_rank": 2,
+        "route_score": 2.4033,
+        "steps": 5,
+        "leaf_reactants": [
+          {
+            "smiles": "[Li]C",
+            "in_stock": true,
+            "molecular_weight": 22.04
+          },
+          {
+            "smiles": "CC(C)=O",
+            "in_stock": true,
+            "molecular_weight": 58.04
+          },
+          {
+            "smiles": "CC=O",
+            "in_stock": false,
+            "molecular_weight": 44.03
+          },
+          {
+            "smiles": "[Cu]I",
+            "in_stock": true,
+            "molecular_weight": 189.83
+          },
+          {
+            "smiles": "[Li]CC",
+            "in_stock": false,
+            "molecular_weight": 36.06
+          }
+        ],
+        "steps_history": [
+          {
+            "step_number": 1,
+            "target_smiles": "CCC(C)(C)CC(C)=O",
+            "expanded_smiles": "CC(=O)C=C(C)C.CC[Cu-]CC",
+            "reaction_template": "[C;D1;H3:3]-[C;H0;D4;+0:4](-[C;D1;H3:5])(-[CH2;D2;+0:1]-[C;D1;H3:2])-[CH2;D2;+0:6]-[C:7](-[C;D1;H3:8])=[O;D1;H0:9]>>C-C-[Cu-]-[CH2;D2;+0:1]-[C;D1;H3:2].[C;D1;H3:3]-[C;H0;D3;+0:4](-[C;D1;H3:5])=[CH;D2;+0:6]-[C:7](-[C;D1;H3:8])=[O;D1;H0:9]",
+            "reaction_condition": [
+              "1,4 addition"
+            ],
+            "step_score": 0.2571,
+            "reaction_type": "Conjugate addition"
+          },
+          {
+            "step_number": 2,
+            "target_smiles": "CC(=O)C=C(C)C",
+            "expanded_smiles": "CC(C)=CC(C)O",
+            "reaction_template": "[C:1]-[C;H0;D3;+0:2](-[C;D1;H3:3])=[O;H0;D1;+0:4]>>[C:1]-[CH;D3;+0:2](-[C;D1;H3:3])-[OH;D1;+0:4]",
+            "reaction_condition": [
+              "KMnO4,OH-",
+              "CuCrO4"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Oxidation"
+          },
+          {
+            "step_number": 3,
+            "target_smiles": "CC(C)=CC(C)O",
+            "expanded_smiles": "CC(C)=CC=O.[Li]C",
+            "reaction_template": "[C:2]=[C:3]-[CH;D3;+0:4](-[CH3;D1;+0:1])-[OH;D1;+0:5]>>[CH3;D1;+0:1]-[Li].[C:2]=[C:3]-[CH;D2;+0:4]=[O;H0;D1;+0:5]",
+            "reaction_condition": [],
+            "step_score": 0.4,
+            "reaction_type": "nucleophilic addition of RLi to C=O"
+          },
+          {
+            "step_number": 4,
+            "target_smiles": "CC(C)=CC=O",
+            "expanded_smiles": "CC(C)=O.CC=O",
+            "reaction_template": "[C;D1;H3:2]-[C;H0;D3;+0:1](-[C;D1;H3:3])=[CH;D2;+0:4]-[C:5]=[O;D1;H0:6]>>O=[C;H0;D3;+0:1](-[C;D1;H3:2])-[C;D1;H3:3].[CH3;D1;+0:4]-[C:5]=[O;D1;H0:6]",
+            "reaction_condition": [
+              "NaOH",
+              "NaOH"
+            ],
+            "step_score": 1.2,
+            "reaction_type": "Aldol condensation"
+          },
+          {
+            "step_number": 5,
+            "target_smiles": "CC[Cu-]CC",
+            "expanded_smiles": "[Cu]I.[Li]CC.[Li]CC",
+            "reaction_template": "[C;D1;H3:2]-[CH2;D2;+0:3]-[Cu-;H0;D2:1]-[CH2;D2;+0:5]-[C;D1;H3:4]>>I-[Cu;H0;D1;+0:1].[C;D1;H3:2]-[CH2;D2;+0:3]-[Li].[C;D1;H3:4]-[CH2;D2;+0:5]-[Li]",
+            "reaction_condition": [
+              "CuI"
+            ],
+            "step_score": 0.5462,
+            "reaction_type": "Organocopper formation"
+          }
+        ]
+      },
+      {
+        "route_rank": 3,
+        "route_score": 0.6571,
+        "steps": 5,
+        "leaf_reactants": [
+          {
+            "smiles": "CC[Cu-]CC",
+            "in_stock": false,
+            "molecular_weight": 121.01
+          },
+          {
+            "smiles": "[Li]C",
+            "in_stock": true,
+            "molecular_weight": 22.04
+          },
+          {
+            "smiles": "O=CC=C1CC1=O",
+            "in_stock": false,
+            "molecular_weight": 96.02
+          }
+        ],
+        "steps_history": [
+          {
+            "step_number": 1,
+            "target_smiles": "CCC(C)(C)CC(C)=O",
+            "expanded_smiles": "CC(=O)C=C(C)C.CC[Cu-]CC",
+            "reaction_template": "[C;D1;H3:3]-[C;H0;D4;+0:4](-[C;D1;H3:5])(-[CH2;D2;+0:1]-[C;D1;H3:2])-[CH2;D2;+0:6]-[C:7](-[C;D1;H3:8])=[O;D1;H0:9]>>C-C-[Cu-]-[CH2;D2;+0:1]-[C;D1;H3:2].[C;D1;H3:3]-[C;H0;D3;+0:4](-[C;D1;H3:5])=[CH;D2;+0:6]-[C:7](-[C;D1;H3:8])=[O;D1;H0:9]",
+            "reaction_condition": [
+              "1,4 addition"
+            ],
+            "step_score": 0.2571,
+            "reaction_type": "Conjugate addition"
+          },
+          {
+            "step_number": 2,
+            "target_smiles": "CC(=O)C=C(C)C",
+            "expanded_smiles": "CC(C)=CC(C)O",
+            "reaction_template": "[C:1]-[C;H0;D3;+0:2](-[C;D1;H3:3])=[O;H0;D1;+0:4]>>[C:1]-[CH;D3;+0:2](-[C;D1;H3:3])-[OH;D1;+0:4]",
+            "reaction_condition": [
+              "KMnO4,OH-",
+              "CuCrO4"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Oxidation"
+          },
+          {
+            "step_number": 3,
+            "target_smiles": "CC(C)=CC(C)O",
+            "expanded_smiles": "CC(C)=CC=O.[Li]C",
+            "reaction_template": "[C:2]=[C:3]-[CH;D3;+0:4](-[CH3;D1;+0:1])-[OH;D1;+0:5]>>[CH3;D1;+0:1]-[Li].[C:2]=[C:3]-[CH;D2;+0:4]=[O;H0;D1;+0:5]",
+            "reaction_condition": [],
+            "step_score": 0.4,
+            "reaction_type": "nucleophilic addition of RLi to C=O"
+          },
+          {
+            "step_number": 4,
+            "target_smiles": "CC(C)=CC=O",
+            "expanded_smiles": "O=CC=C1CC1",
+            "reaction_template": "[CH3;D1;+0:2]-[C:1]-[CH3;D1;+0:3]>>[C:1]1-[CH2;D2;+0:2]-[CH2;D2;+0:3]-1",
+            "reaction_condition": [
+              "H2,Ni,40 C or pd/C, 50 C"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Catalytic hydrogenation"
+          },
+          {
+            "step_number": 5,
+            "target_smiles": "O=CC=C1CC1",
+            "expanded_smiles": "O=CC=C1CC1=O",
+            "reaction_template": "[C:2]-[CH2;D2;+0:1]-[C:3]>>O=[C;H0;D3;+0:1](-[C:2])-[C:3]",
+            "reaction_condition": [
+              "Zn(Hg),HCl,heating"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Reduction (Clemmensen)"
+          }
+        ]
+      },
+      {
+        "route_rank": 4,
+        "route_score": 0.2571,
+        "steps": 5,
+        "leaf_reactants": [
+          {
+            "smiles": "CC[Cu-]CC",
+            "in_stock": false,
+            "molecular_weight": 121.01
+          },
+          {
+            "smiles": "CC(=O)C=C1CC1=O",
+            "in_stock": false,
+            "molecular_weight": 110.04
+          }
+        ],
+        "steps_history": [
+          {
+            "step_number": 1,
+            "target_smiles": "CCC(C)(C)CC(C)=O",
+            "expanded_smiles": "CC(=O)C=C(C)C.CC[Cu-]CC",
+            "reaction_template": "[C;D1;H3:3]-[C;H0;D4;+0:4](-[C;D1;H3:5])(-[CH2;D2;+0:1]-[C;D1;H3:2])-[CH2;D2;+0:6]-[C:7](-[C;D1;H3:8])=[O;D1;H0:9]>>C-C-[Cu-]-[CH2;D2;+0:1]-[C;D1;H3:2].[C;D1;H3:3]-[C;H0;D3;+0:4](-[C;D1;H3:5])=[CH;D2;+0:6]-[C:7](-[C;D1;H3:8])=[O;D1;H0:9]",
+            "reaction_condition": [
+              "1,4 addition"
+            ],
+            "step_score": 0.2571,
+            "reaction_type": "Conjugate addition"
+          },
+          {
+            "step_number": 2,
+            "target_smiles": "CC(=O)C=C(C)C",
+            "expanded_smiles": "CC(C)=CC(C)O",
+            "reaction_template": "[C:1]-[C;H0;D3;+0:2](-[C;D1;H3:3])=[O;H0;D1;+0:4]>>[C:1]-[CH;D3;+0:2](-[C;D1;H3:3])-[OH;D1;+0:4]",
+            "reaction_condition": [
+              "KMnO4,OH-",
+              "CuCrO4"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Oxidation"
+          },
+          {
+            "step_number": 3,
+            "target_smiles": "CC(C)=CC(C)O",
+            "expanded_smiles": "CC(O)C=C1CC1",
+            "reaction_template": "[CH3;D1;+0:2]-[C:1]-[CH3;D1;+0:3]>>[C:1]1-[CH2;D2;+0:2]-[CH2;D2;+0:3]-1",
+            "reaction_condition": [
+              "H2,Ni,40 C or pd/C, 50 C"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Catalytic hydrogenation"
+          },
+          {
+            "step_number": 4,
+            "target_smiles": "CC(O)C=C1CC1",
+            "expanded_smiles": "CC(=O)C=C1CC1",
+            "reaction_template": "[C:1]-[CH;D3;+0:2](-[C;D1;H3:3])-[OH;D1;+0:4]>>[C:1]-[C;H0;D3;+0:2](-[C;D1;H3:3])=[O;H0;D1;+0:4]",
+            "reaction_condition": [
+              "H2, Pd or Ni",
+              "LiAlH4, diethyl etherorTHF"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Reduction"
+          },
+          {
+            "step_number": 5,
+            "target_smiles": "CC(=O)C=C1CC1",
+            "expanded_smiles": "CC(=O)C=C1CC1=O",
+            "reaction_template": "[C:2]-[CH2;D2;+0:1]-[C:3]>>O=[C;H0;D3;+0:1](-[C:2])-[C:3]",
+            "reaction_condition": [
+              "Zn(Hg),HCl,heating"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Reduction (Clemmensen)"
+          }
+        ]
+      },
+      {
+        "route_rank": 5,
+        "route_score": 0.2571,
+        "steps": 5,
+        "leaf_reactants": [
+          {
+            "smiles": "CC[Cu-]CC",
+            "in_stock": false,
+            "molecular_weight": 121.01
+          },
+          {
+            "smiles": "CC(=O)OC(C)C=C1CC1=O",
+            "in_stock": false,
+            "molecular_weight": 154.06
+          }
+        ],
+        "steps_history": [
+          {
+            "step_number": 1,
+            "target_smiles": "CCC(C)(C)CC(C)=O",
+            "expanded_smiles": "CC(=O)C=C(C)C.CC[Cu-]CC",
+            "reaction_template": "[C;D1;H3:3]-[C;H0;D4;+0:4](-[C;D1;H3:5])(-[CH2;D2;+0:1]-[C;D1;H3:2])-[CH2;D2;+0:6]-[C:7](-[C;D1;H3:8])=[O;D1;H0:9]>>C-C-[Cu-]-[CH2;D2;+0:1]-[C;D1;H3:2].[C;D1;H3:3]-[C;H0;D3;+0:4](-[C;D1;H3:5])=[CH;D2;+0:6]-[C:7](-[C;D1;H3:8])=[O;D1;H0:9]",
+            "reaction_condition": [
+              "1,4 addition"
+            ],
+            "step_score": 0.2571,
+            "reaction_type": "Conjugate addition"
+          },
+          {
+            "step_number": 2,
+            "target_smiles": "CC(=O)C=C(C)C",
+            "expanded_smiles": "CC(=O)C=C1CC1",
+            "reaction_template": "[CH3;D1;+0:2]-[C:1]-[CH3;D1;+0:3]>>[C:1]1-[CH2;D2;+0:2]-[CH2;D2;+0:3]-1",
+            "reaction_condition": [
+              "H2,Ni,40 C or pd/C, 50 C"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Catalytic hydrogenation"
+          },
+          {
+            "step_number": 3,
+            "target_smiles": "CC(=O)C=C1CC1",
+            "expanded_smiles": "CC(=O)C=C1CC1=O",
+            "reaction_template": "[C:2]-[CH2;D2;+0:1]-[C:3]>>O=[C;H0;D3;+0:1](-[C:2])-[C:3]",
+            "reaction_condition": [
+              "Zn(Hg),HCl,heating"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Reduction (Clemmensen)"
+          },
+          {
+            "step_number": 4,
+            "target_smiles": "CC(=O)C=C1CC1=O",
+            "expanded_smiles": "CC(O)C=C1CC1=O",
+            "reaction_template": "[C:1]-[C;H0;D3;+0:2](-[C;D1;H3:3])=[O;H0;D1;+0:4]>>[C:1]-[CH;D3;+0:2](-[C;D1;H3:3])-[OH;D1;+0:4]",
+            "reaction_condition": [
+              "KMnO4,OH-",
+              "CuCrO4"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Oxidation"
+          },
+          {
+            "step_number": 5,
+            "target_smiles": "CC(O)C=C1CC1=O",
+            "expanded_smiles": "CC(=O)OC(C)C=C1CC1=O",
+            "reaction_template": "[C:2]-[OH;D1;+0:1]>>C-C(=O)-[O;H0;D2;+0:1]-[C:2]",
+            "reaction_condition": [
+              "(BH3)2",
+              "Na"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Reduction"
+          }
+        ]
+      },
+      {
+        "route_rank": 6,
+        "route_score": 0.2571,
+        "steps": 5,
+        "leaf_reactants": [
+          {
+            "smiles": "CC[Cu-]CC",
+            "in_stock": false,
+            "molecular_weight": 121.01
+          },
+          {
+            "smiles": "CC(O)C=C1C(=O)C1=O",
+            "in_stock": false,
+            "molecular_weight": 126.03
+          }
+        ],
+        "steps_history": [
+          {
+            "step_number": 1,
+            "target_smiles": "CCC(C)(C)CC(C)=O",
+            "expanded_smiles": "CC(=O)C=C(C)C.CC[Cu-]CC",
+            "reaction_template": "[C;D1;H3:3]-[C;H0;D4;+0:4](-[C;D1;H3:5])(-[CH2;D2;+0:1]-[C;D1;H3:2])-[CH2;D2;+0:6]-[C:7](-[C;D1;H3:8])=[O;D1;H0:9]>>C-C-[Cu-]-[CH2;D2;+0:1]-[C;D1;H3:2].[C;D1;H3:3]-[C;H0;D3;+0:4](-[C;D1;H3:5])=[CH;D2;+0:6]-[C:7](-[C;D1;H3:8])=[O;D1;H0:9]",
+            "reaction_condition": [
+              "1,4 addition"
+            ],
+            "step_score": 0.2571,
+            "reaction_type": "Conjugate addition"
+          },
+          {
+            "step_number": 2,
+            "target_smiles": "CC(=O)C=C(C)C",
+            "expanded_smiles": "CC(=O)C=C1CC1",
+            "reaction_template": "[CH3;D1;+0:2]-[C:1]-[CH3;D1;+0:3]>>[C:1]1-[CH2;D2;+0:2]-[CH2;D2;+0:3]-1",
+            "reaction_condition": [
+              "H2,Ni,40 C or pd/C, 50 C"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Catalytic hydrogenation"
+          },
+          {
+            "step_number": 3,
+            "target_smiles": "CC(=O)C=C1CC1",
+            "expanded_smiles": "CC(=O)C=C1CC1=O",
+            "reaction_template": "[C:2]-[CH2;D2;+0:1]-[C:3]>>O=[C;H0;D3;+0:1](-[C:2])-[C:3]",
+            "reaction_condition": [
+              "Zn(Hg),HCl,heating"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Reduction (Clemmensen)"
+          },
+          {
+            "step_number": 4,
+            "target_smiles": "CC(=O)C=C1CC1=O",
+            "expanded_smiles": "CC(=O)C=C1C(=O)C1=O",
+            "reaction_template": "[C:2]-[CH2;D2;+0:1]-[C:3]>>O=[C;H0;D3;+0:1](-[C:2])-[C:3]",
+            "reaction_condition": [
+              "Zn(Hg),HCl,heating"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Reduction (Clemmensen)"
+          },
+          {
+            "step_number": 5,
+            "target_smiles": "CC(=O)C=C1C(=O)C1=O",
+            "expanded_smiles": "CC(O)C=C1C(=O)C1=O",
+            "reaction_template": "[C:1]-[C;H0;D3;+0:2](-[C;D1;H3:3])=[O;H0;D1;+0:4]>>[C:1]-[CH;D3;+0:2](-[C;D1;H3:3])-[OH;D1;+0:4]",
+            "reaction_condition": [
+              "KMnO4,OH-",
+              "CuCrO4"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Oxidation"
+          }
+        ]
+      },
+      {
+        "route_rank": 7,
+        "route_score": 0.0,
+        "steps": 5,
+        "leaf_reactants": [
+          {
+            "smiles": "CCC1(CC(C)O)CC1=O",
+            "in_stock": false,
+            "molecular_weight": 142.1
+          }
+        ],
+        "steps_history": [
+          {
+            "step_number": 1,
+            "target_smiles": "CCC(C)(C)CC(C)=O",
+            "expanded_smiles": "CCC(C)(C)CC(C)O",
+            "reaction_template": "[C:1]-[C;H0;D3;+0:2](-[C;D1;H3:3])=[O;H0;D1;+0:4]>>[C:1]-[CH;D3;+0:2](-[C;D1;H3:3])-[OH;D1;+0:4]",
+            "reaction_condition": [
+              "KMnO4,OH-",
+              "CuCrO4"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Oxidation"
+          },
+          {
+            "step_number": 2,
+            "target_smiles": "CCC(C)(C)CC(C)O",
+            "expanded_smiles": "CCC1(CC(C)O)CC1",
+            "reaction_template": "[CH3;D1;+0:2]-[C:1]-[CH3;D1;+0:3]>>[C:1]1-[CH2;D2;+0:2]-[CH2;D2;+0:3]-1",
+            "reaction_condition": [
+              "H2,Ni,40 C or pd/C, 50 C"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Catalytic hydrogenation"
+          },
+          {
+            "step_number": 3,
+            "target_smiles": "CCC1(CC(C)O)CC1",
+            "expanded_smiles": "CCC1(CC(C)=O)CC1",
+            "reaction_template": "[C:1]-[CH;D3;+0:2](-[C;D1;H3:3])-[OH;D1;+0:4]>>[C:1]-[C;H0;D3;+0:2](-[C;D1;H3:3])=[O;H0;D1;+0:4]",
+            "reaction_condition": [
+              "H2, Pd or Ni",
+              "LiAlH4, diethyl etherorTHF"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Reduction"
+          },
+          {
+            "step_number": 4,
+            "target_smiles": "CCC1(CC(C)=O)CC1",
+            "expanded_smiles": "CCC1(CC(C)=O)CC1=O",
+            "reaction_template": "[C:2]-[CH2;D2;+0:1]-[C:3]>>O=[C;H0;D3;+0:1](-[C:2])-[C:3]",
+            "reaction_condition": [
+              "Zn(Hg),HCl,heating"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Reduction (Clemmensen)"
+          },
+          {
+            "step_number": 5,
+            "target_smiles": "CCC1(CC(C)=O)CC1=O",
+            "expanded_smiles": "CCC1(CC(C)O)CC1=O",
+            "reaction_template": "[C:1]-[C;H0;D3;+0:2](-[C;D1;H3:3])=[O;H0;D1;+0:4]>>[C:1]-[CH;D3;+0:2](-[C;D1;H3:3])-[OH;D1;+0:4]",
+            "reaction_condition": [
+              "KMnO4,OH-",
+              "CuCrO4"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Oxidation"
+          }
+        ]
+      },
+      {
+        "route_rank": 8,
+        "route_score": 0.0,
+        "steps": 5,
+        "leaf_reactants": [
+          {
+            "smiles": "CCC1(C(=O)C(C)=O)CC1=O",
+            "in_stock": false,
+            "molecular_weight": 154.06
+          }
+        ],
+        "steps_history": [
+          {
+            "step_number": 1,
+            "target_smiles": "CCC(C)(C)CC(C)=O",
+            "expanded_smiles": "CCC(C)(C)CC(C)O",
+            "reaction_template": "[C:1]-[C;H0;D3;+0:2](-[C;D1;H3:3])=[O;H0;D1;+0:4]>>[C:1]-[CH;D3;+0:2](-[C;D1;H3:3])-[OH;D1;+0:4]",
+            "reaction_condition": [
+              "KMnO4,OH-",
+              "CuCrO4"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Oxidation"
+          },
+          {
+            "step_number": 2,
+            "target_smiles": "CCC(C)(C)CC(C)O",
+            "expanded_smiles": "CCC1(CC(C)O)CC1",
+            "reaction_template": "[CH3;D1;+0:2]-[C:1]-[CH3;D1;+0:3]>>[C:1]1-[CH2;D2;+0:2]-[CH2;D2;+0:3]-1",
+            "reaction_condition": [
+              "H2,Ni,40 C or pd/C, 50 C"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Catalytic hydrogenation"
+          },
+          {
+            "step_number": 3,
+            "target_smiles": "CCC1(CC(C)O)CC1",
+            "expanded_smiles": "CCC1(CC(C)=O)CC1",
+            "reaction_template": "[C:1]-[CH;D3;+0:2](-[C;D1;H3:3])-[OH;D1;+0:4]>>[C:1]-[C;H0;D3;+0:2](-[C;D1;H3:3])=[O;H0;D1;+0:4]",
+            "reaction_condition": [
+              "H2, Pd or Ni",
+              "LiAlH4, diethyl etherorTHF"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Reduction"
+          },
+          {
+            "step_number": 4,
+            "target_smiles": "CCC1(CC(C)=O)CC1",
+            "expanded_smiles": "CCC1(CC(C)=O)CC1=O",
+            "reaction_template": "[C:2]-[CH2;D2;+0:1]-[C:3]>>O=[C;H0;D3;+0:1](-[C:2])-[C:3]",
+            "reaction_condition": [
+              "Zn(Hg),HCl,heating"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Reduction (Clemmensen)"
+          },
+          {
+            "step_number": 5,
+            "target_smiles": "CCC1(CC(C)=O)CC1=O",
+            "expanded_smiles": "CCC1(C(=O)C(C)=O)CC1=O",
+            "reaction_template": "[C:2]-[CH2;D2;+0:1]-[C:3]>>O=[C;H0;D3;+0:1](-[C:2])-[C:3]",
+            "reaction_condition": [
+              "Zn(Hg),HCl,heating"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Reduction (Clemmensen)"
+          }
+        ]
+      },
+      {
+        "route_rank": 9,
+        "route_score": 0.0,
+        "steps": 5,
+        "leaf_reactants": [
+          {
+            "smiles": "CCC1(CC(C)=O)C(=O)C1=O",
+            "in_stock": false,
+            "molecular_weight": 154.06
+          }
+        ],
+        "steps_history": [
+          {
+            "step_number": 1,
+            "target_smiles": "CCC(C)(C)CC(C)=O",
+            "expanded_smiles": "CCC(C)(C)CC(C)O",
+            "reaction_template": "[C:1]-[C;H0;D3;+0:2](-[C;D1;H3:3])=[O;H0;D1;+0:4]>>[C:1]-[CH;D3;+0:2](-[C;D1;H3:3])-[OH;D1;+0:4]",
+            "reaction_condition": [
+              "KMnO4,OH-",
+              "CuCrO4"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Oxidation"
+          },
+          {
+            "step_number": 2,
+            "target_smiles": "CCC(C)(C)CC(C)O",
+            "expanded_smiles": "CCC1(CC(C)O)CC1",
+            "reaction_template": "[CH3;D1;+0:2]-[C:1]-[CH3;D1;+0:3]>>[C:1]1-[CH2;D2;+0:2]-[CH2;D2;+0:3]-1",
+            "reaction_condition": [
+              "H2,Ni,40 C or pd/C, 50 C"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Catalytic hydrogenation"
+          },
+          {
+            "step_number": 3,
+            "target_smiles": "CCC1(CC(C)O)CC1",
+            "expanded_smiles": "CCC1(CC(C)=O)CC1",
+            "reaction_template": "[C:1]-[CH;D3;+0:2](-[C;D1;H3:3])-[OH;D1;+0:4]>>[C:1]-[C;H0;D3;+0:2](-[C;D1;H3:3])=[O;H0;D1;+0:4]",
+            "reaction_condition": [
+              "H2, Pd or Ni",
+              "LiAlH4, diethyl etherorTHF"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Reduction"
+          },
+          {
+            "step_number": 4,
+            "target_smiles": "CCC1(CC(C)=O)CC1",
+            "expanded_smiles": "CCC1(CC(C)=O)CC1=O",
+            "reaction_template": "[C:2]-[CH2;D2;+0:1]-[C:3]>>O=[C;H0;D3;+0:1](-[C:2])-[C:3]",
+            "reaction_condition": [
+              "Zn(Hg),HCl,heating"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Reduction (Clemmensen)"
+          },
+          {
+            "step_number": 5,
+            "target_smiles": "CCC1(CC(C)=O)CC1=O",
+            "expanded_smiles": "CCC1(CC(C)=O)C(=O)C1=O",
+            "reaction_template": "[C:2]-[CH2;D2;+0:1]-[C:3]>>O=[C;H0;D3;+0:1](-[C:2])-[C:3]",
+            "reaction_condition": [
+              "Zn(Hg),HCl,heating"
+            ],
+            "step_score": 0.0,
+            "reaction_type": "Reduction (Clemmensen)"
+          }
+        ]
+      }
+    ]
+  }
+}

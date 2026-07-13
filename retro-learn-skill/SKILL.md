@@ -110,13 +110,16 @@ Full mapping: 1–6 carbons → `emol_under_{N}_carbons`.
 
 **LLM supplement** (Scenario B & C): Always provide **at least 1 LLM-designed route** regardless of engine outcome — this gives an alternative mechanistic angle that complements the template-based results. For Scenario C specifically: if the preferred reactant is unreached after 5 engine steps, provide **1–2 LLM routes** (instead of exactly 1) to compensate for the engine gap.
 
-**Route ordering rule** (Scenario B & C — engine + LLM always present):
+**Route ordering rule** (engine + LLM always present):
 
-| Engine result | Display order |
-|---------------|---------------|
-| Engine routes found (best score ≥ 0) | Engine routes first (max 3) → LLM route(s) |
-| Engine routes found (best score < 0) | LLM route(s) first → engine routes |
-| No engine routes | LLM routes only (1 for B, 1–2 for C) |
+| Display order |
+|---------------|
+| Engine routes (score > 3) → LLM routes (score = 3) → Engine routes (score ≤ 3) |
+| No engine routes → LLM routes only (1 for B, 1–2 for C) |
+
+> LLM-designed routes default to score = 3. Engine routes are split into "high" (> 3) and "low" (≤ 3) groups.
+> Max 3 engine routes displayed (best by score). All LLM routes are always shown.
+> visualize.py accepts `--llm-json <file>` to inject LLM routes and applies this sorting + cap automatically.
 
 ### Visual Language Convention (MANDATORY)
 
@@ -137,23 +140,32 @@ Arrow labels: **reaction conditions above**, reaction type below. Follow these r
 ### Phase 3: Generate Visualization
 
 ```bash
-# Default: forward-direction flowchart
+# Default: forward-direction flowchart (engine-only)
 python retro-learn-skill/scripts/visualize.py retro_result.json -o build_target_view.html
+# With LLM-designed routes
+python retro-learn-skill/scripts/visualize.py retro_result.json --llm-json llm_routes.json -o build_target_view.html
 # With starting material
 python retro-learn-skill/scripts/visualize.py retro_result.json -o build_target_from_source_view.html
 # Tree view (only when user explicitly asks)
 python retro-learn-skill/scripts/tree_view.py retro_result.json -o build_target_tree.html
 ```
 
-Produces HTML with: target molecule SVG + SMILES + MW, forward-direction layout (reactants → arrow → product), single-arrow format (conditions above, reaction type below), ~60% scaled SVGs, color-coded reaction type labels.
+Produces HTML with: target molecule SVG + SMILES + MW, forward-direction layout (reactants → arrow → product), single-arrow format (conditions above, reaction type below), ~60% scaled SVGs, color-coded reaction type labels, source badges (SimpRetro/LLM-designed), and automatic **Route Summary** box describing each route's synthetic strategy.
 
-**Multi-step rendering**: For multi-step routes, `visualize.py` now renders each forward step as a vertical stack of rows. Each step shows ALL reactants from `expanded_smiles` (with `+` separators for multi-reactant steps) → arrow with conditions → product. This correctly handles branched/converging routes where co-reactants are prepared by independent branches. Steps are labeled "Step 1", "Step 2", etc.
+**LLM route JSON format** (for `--llm-json`):
+```json
+[{"source": "llm", "route_score": 3, "steps": N, "leaf_reactants": [...], "steps_history": [...]}]
+```
 
-### Phase 4: Custom Visualization (use when needed)
+**Multi-step rendering**: For multi-step routes, `visualize.py` renders each forward step as a vertical stack of rows. Each step shows ALL reactants from `expanded_smiles` (with `+` separators for multi-reactant steps) → arrow with conditions → product. Steps are labeled "Step 1", "Step 2", etc. Max 3 engine routes displayed; all LLM routes shown.
 
-Build a custom HTML page for situations where `visualize.py` output is insufficient: when you need annotated mechanism explanations, side-by-side route comparisons, explicit branch labels (Branch A/B), or Chinese/English manual labels. Use the standard template in `references/build_template.md` — includes `load_or_gen()`, `mb()`, `mb_target()`, `ar()` helpers and full CSS.
+### Phase 4: Custom Visualization (optional — visualize.py handles most needs)
+
+Build a custom HTML page for advanced needs: annotated mechanism explanations, side-by-side route comparisons, explicit branch labels (Branch A/B), or Chinese/English manual labels. Use the standard template in `references/build_template.md` — includes `load_or_gen()`, `mb()`, `mb_target()`, `ar()` helpers and full CSS.
 
 **SVG generation rule (MANDATORY)**: `load_or_gen()` MUST always regenerate SVGs — **no disk caching**. Invalid SMILES must raise an error (`ValueError`), never return empty string silently. This prevents cross-molecule cache poisoning and catches invalid SMILES immediately.
+
+**All-routes SVG display rule (MANDATORY)**: Every route in a custom visualization — both engine and LLM-designed — MUST display molecular structures via `mb()`/`mb_target()` components with proper RDKit SVGs. Never use plain-text SMILES blocks for route steps. SVG file names must use descriptive chemical names (e.g., `target_stilbene.svg`), never generic names like `target.svg`.
 
 **Naming convention**:
 - `build_{target_slug}_from_{source_slug}_view.html` — with starting material

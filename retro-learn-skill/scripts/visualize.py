@@ -174,7 +174,110 @@ def _make_target_mol_box(svg, smiles, name="", mw=""):
     </div>'''
 
 
-def generate_flowchart_html(data, output_path):
+def _sort_routes_with_llm(engine_routes, llm_routes, max_engine=3):
+    """Sort routes: engine(score>3) → LLM(score=3) → engine(score≤3).
+
+    LLM-designed routes default to score=3 if not specified.
+    Limits engine routes to max_engine (default 3) — keeps all >3, fills
+    remaining slots with best ≤3 routes.
+    Re-numbers route_rank after sorting.
+    """
+    high = [r for r in engine_routes if r.get("route_score", 0) > 3]
+    low = [r for r in engine_routes if r.get("route_score", 0) <= 3]
+
+    # Limit total engine routes to max_engine
+    engine_slots_remaining = max_engine - len(high)
+    if engine_slots_remaining > 0:
+        low = low[:engine_slots_remaining]
+    else:
+        # Already have ≥ max_engine high-score routes — trim high to max_engine
+        high = high[:max_engine]
+        low = []
+
+    # Ensure LLM routes have source marker and default score
+    for r in llm_routes:
+        r.setdefault("source", "llm")
+        if r.get("route_score") is None:
+            r["route_score"] = 3
+
+    merged = high + llm_routes + low
+    for i, route in enumerate(merged):
+        route["route_rank"] = i + 1
+    return merged
+
+
+def _add_summary(parts, data, llm_routes, display_routes):
+    """Generate a route-by-route summary of retrosynthesis strategies below the route cards."""
+    target = data["data"]["target_molecule"]
+    mode = data["data"].get("mode", "single_step")
+    all_routes = data["data"].get("all_routes", [])
+
+    engine_count = len(all_routes)
+    llm_count = len(llm_routes) if llm_routes else 0
+
+    parts.append('<div class="info-box">')
+    parts.append(f'<strong>Route Summary</strong><br><br>')
+
+    if engine_count == 0 and llm_count == 0:
+        parts.append('No viable route found.')
+    elif not display_routes:
+        parts.append(f'Template engine found {engine_count} route(s). No routes meet display criteria.')
+    else:
+        for i, route in enumerate(display_routes):
+            score = route.get("route_score", 0)
+            steps = route.get("steps", len(route.get("steps_history", [])))
+            source = route.get("source", "simpretro")
+            source_label = "LLM-designed" if source == "llm" else "SimpRetro"
+            is_best = (i == 0 and score > 0)
+            best_mark = " (Best)" if is_best else ""
+
+            # Collect reaction types from steps
+            steps_hist = route.get("steps_history", [])
+            rxn_types = []
+            conditions = []
+            for step in reversed(steps_hist):  # forward order
+                rt = step.get("reaction_type", "")
+                if rt and rt not in rxn_types:
+                    rxn_types.append(rt)
+                cond = _dedup_conditions(step.get("reaction_condition", []))
+                if cond:
+                    conditions.append(cond)
+
+            parts.append(f'<b>{source_label} Route {route.get("route_rank", i + 1)}{best_mark} '
+                        f'(score={score:.2f}, {steps} step(s))</b><br>')
+
+            # Describe the route
+            parts.append(f'{len(steps_hist)} forward steps. ')
+
+            if conditions:
+                parts.append(f'Key reactions: {" → ".join(conditions)}. ')
+
+            if rxn_types:
+                parts.append(f'Reaction types: {", ".join(rxn_types)}. ')
+
+            # Leaf reactants stock status
+            leaves = route.get("leaf_reactants", [])
+            if leaves:
+                in_stock = [l for l in leaves if l.get("in_stock")]
+                parts.append(f'{len(in_stock)}/{len(leaves)} leaf reactant(s) in stock.')
+
+            parts.append('<br><br>')
+
+    # Footer line with target info
+    parts.append('<span style="font-size:10px;color:#888">')
+    parts.append(f'Target: {esc(target["smiles"])} · MW: {esc(str(target.get("molecular_weight", "")))}')
+    msg = data.get("message", "")
+    if msg:
+        parts.append(f' · {esc(msg)}')
+    if engine_count > 0:
+        parts.append(f' · Engine: {engine_count} total route(s) found')
+    if llm_count > 0:
+        parts.append(f' · LLM: {llm_count} route(s)')
+    parts.append('</span>')
+    parts.append('</div>')
+
+
+def generate_flowchart_html(data, output_path, llm_routes=None):
     """Generate a flowchart-style HTML visualization with forward-direction single-arrow layout."""
     target = data["data"]["target_molecule"]
     mode = data["data"].get("mode", "single_step")
@@ -253,11 +356,14 @@ def generate_flowchart_html(data, output_path):
   .step-label:first-child { margin-top: 4px; }
   .info-line { font-size: 11px; color: #555; margin-top: 6px; line-height: 1.6; }
   .footer { font-size: 11px; color: #999; text-align: center; margin-top: 20px; padding: 12px; border-top: 1px solid #eee; }
+  .info-box { background: #EEEDFE; border: 1.5px solid #534AB7; border-radius: 10px; padding: 14px 18px; margin-top: 16px; font-size: 12px; line-height: 1.8; }
 
   /* Target molecule distinctive styling */
   .mol-target { position: relative; }
   .mol-target .mol-svg { border: 2px solid #4338CA; border-radius: 6px; background: #EEEDFE; }
   .target-label { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; color: #fff; background: #4338CA; letter-spacing: 0.5px; vertical-align: middle; }
+  .source-sr { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 9px; font-weight: 500; color: #4338CA; background: #e8e6ff; border: 1px solid #534AB7; }
+  .source-llm { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 9px; font-weight: 500; color: #856404; background: #fff3cd; border: 1px solid #ffc107; }
 </style>
 </head>
 <body>
@@ -266,28 +372,46 @@ def generate_flowchart_html(data, output_path):
 
     parts = [html_css]
 
-    # Target card — uses _make_target_mol_box for name + SMILES + target label
+    # Target card
     parts.append(f"""<div class="target-card">
   {_make_target_mol_box(target_svg, target['smiles'], target_name, str(target_mw))}
 </div>""")
 
+    display_routes = []  # populated below, used by _add_summary
+
     if mode == "single_step":
         routes = data["data"].get("retrosynthesis_routes", [])
-        for route in routes:
-            rank = route["route_rank"]
-            score = route["score"]
+        # Tag engine routes
+        for r in routes:
+            r.setdefault("source", "simpretro")
+            # Normalize score field name
+            if "score" in r and "route_score" not in r:
+                r["route_score"] = r["score"]
+
+        if llm_routes:
+            display_routes = _sort_routes_with_llm(routes, llm_routes)
+        else:
+            display_routes = routes
+
+        for route in display_routes:
+            rank = route.get("route_rank", 1)
+            score = route.get("route_score", route.get("score", 0))
+            source = route.get("source", "simpretro")
             is_best = rank == 1 and score > 0
             card_cls = "route-best" if is_best else "route-normal"
             cond = _dedup_conditions(route.get("reaction_condition", []))
             rxn_label = classify_reaction(route.get("reaction_template", ""), route.get("reaction_condition", []), route.get("reaction_type"))
             rxn_cls = _rxn_type_class(rxn_label)
 
+            source_badge = '<span class="source-llm">LLM-designed</span>' if source == "llm" else '<span class="source-sr">SimpRetro</span>'
+
             parts.append(f'<div class="route-card {card_cls}">')
             parts.append(f'  <div class="route-header">')
             parts.append(f'    <span class="route-badge">Route {rank}</span>')
-            parts.append(f'    <span class="route-score">Score: {score:.4f}</span>')
             if is_best:
                 parts.append(f'    <span class="best-tag">Best</span>')
+            parts.append(f'    {source_badge}')
+            parts.append(f'    <span class="route-score">Score: {score:.4f}</span>')
             parts.append(f'  </div>')
             parts.append(f'  <div class="step">')
 
@@ -310,7 +434,7 @@ def generate_flowchart_html(data, output_path):
             parts.append(f'</div>')
 
     else:
-        # Multi-step — show up to 3 routes from all_routes
+        # Multi-step — merge engine + LLM routes, then sort
         all_routes = data["data"].get("all_routes", [])
         recommended = data["data"].get("recommended_route")
         if not all_routes and recommended:
@@ -323,8 +447,18 @@ def generate_flowchart_html(data, output_path):
                 "steps_history": recommended.get("steps", []),
             }]
 
+        # Tag engine routes with source
+        for r in all_routes:
+            r.setdefault("source", "simpretro")
+
+        # Merge with LLM routes and sort: engine(>3) → LLM(3) → engine(≤3)
+        if llm_routes:
+            display_routes = _sort_routes_with_llm(all_routes, llm_routes)
+        else:
+            display_routes = all_routes
+
         shown = 0
-        for route in all_routes[:3]:
+        for route in display_routes:
             steps_history = route.get("steps_history", [])
             rank = route.get("route_rank", shown + 1)
             score = route.get("route_score", 0)
@@ -396,12 +530,15 @@ def generate_flowchart_html(data, output_path):
                 chain_parts.append('</div>')  # close .step-row
 
             badge_text = "Best Route" if is_best else f"Route {rank}"
+            source = route.get("source", "simpretro")
+            source_badge = '<span class="source-llm">LLM-designed</span>' if source == "llm" else '<span class="source-sr">SimpRetro</span>'
             parts.append(f'<div class="route-card {card_cls}">')
             parts.append(f'  <div class="route-header">')
             parts.append(f'    <span class="route-badge">{badge_text}</span>')
-            parts.append(f'    <span class="route-score">Score: {score:.4f} · {step_count} step(s)</span>')
             if is_best:
                 parts.append(f'    <span class="best-tag">Best</span>')
+            parts.append(f'    {source_badge}')
+            parts.append(f'    <span class="route-score">Score: {score:.4f} · {step_count} step(s)</span>')
             parts.append(f'  </div>')
             parts.append(f'  <div class="step-chain">')
             parts.append(f'    {" ".join(chain_parts)}')
@@ -411,6 +548,9 @@ def generate_flowchart_html(data, output_path):
 
         if shown == 0:
             parts.append(f'<p style="color:#888;text-align:center;margin-top:24px;">No viable route found.</p>')
+
+    # ---- Summary section ----
+    _add_summary(parts, data, llm_routes, display_routes)
 
     parts.append('<div class="footer">This result is a heuristic suggestion, not an experimentally validated protocol. SimpRetro Retrosynthesis Engine</div>')
     parts.append('</body></html>')
@@ -425,6 +565,7 @@ def main():
     parser = argparse.ArgumentParser(description="SimpRetro result visualizer")
     parser.add_argument("input", help="Path to retro_result.json")
     parser.add_argument("-o", "--output", default=None, help="Output HTML path (default: <input>_view.html)")
+    parser.add_argument("--llm-json", default=None, help="Optional JSON file with LLM-designed routes (array of route objects)")
     args = parser.parse_args()
 
     if not os.path.exists(args.input):
@@ -434,8 +575,17 @@ def main():
     with open(args.input, "r", encoding="utf-8") as f:
         data = json.load(f)
 
+    llm_routes = None
+    if args.llm_json:
+        if not os.path.exists(args.llm_json):
+            print(f"Error: LLM routes file not found: {args.llm_json}")
+            return 1
+        with open(args.llm_json, "r", encoding="utf-8") as f:
+            llm_data = json.load(f)
+        llm_routes = llm_data if isinstance(llm_data, list) else llm_data.get("llm_routes", [])
+
     output = args.output or os.path.splitext(args.input)[0] + "_view.html"
-    generate_flowchart_html(data, output)
+    generate_flowchart_html(data, output, llm_routes=llm_routes)
     return 0
 
 

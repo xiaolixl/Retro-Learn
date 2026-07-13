@@ -526,35 +526,31 @@ Reaction steps:
                 pass
 
     @staticmethod
-    def _scenario_c_needs_llm_fallback(planning_result: Dict[str, Any]) -> bool:
-        """Check if Scenario C has no route that reached preferred reactants."""
-        data = planning_result.get("data", {})
-        if data.get("mode") != "multi_step":
-            return False
-        all_routes = data.get("all_routes", [])
-        if not all_routes:
-            return True  # No routes at all
-        # Check if any route completed (reached preferred reactants)
-        # The engine marks completed routes via 'completed' field
-        # If no completed flag, check if recommended_route exists
-        rec = data.get("recommended_route")
-        return rec is None
+    def _is_multi_step_scenario(resolved_request) -> bool:
+        """Check if the request is Scenario B or C (multi-step)."""
+        return resolved_request.step_count > 1
 
     def _llm_design_routes(self, target_smiles: str, target_name: str,
                            preferred_smiles_list: list, preferred_names: list,
                            step_count: int, language: str) -> list:
-        """LLM-designed synthetic routes when engine fails to reach preferred reactants.
+        """LLM-designed synthetic routes (always called for Scenario B/C).
 
         Returns a list of route dicts compatible with planning_result['data']['all_routes'].
         """
         target_label = target_name or target_smiles
-        starting_label = ", ".join(preferred_names) if preferred_names else ", ".join(preferred_smiles_list)
         lang_hint = "Chinese" if language == "zh" else "English"
 
-        prompt = f"""You are an expert synthetic organic chemist. Design 1-2 practical synthetic routes.
+        if preferred_smiles_list:
+            starting_label = ", ".join(preferred_names) if preferred_names else ", ".join(preferred_smiles_list)
+            starting_line = f"Starting material(s): {starting_label} ({', '.join(preferred_smiles_list)})"
+        else:
+            starting_line = ("Starting materials: any commercially available building blocks "
+                             "(choose practical, common reagents)")
+
+        prompt = f"""You are an expert synthetic organic chemist. Design exactly 1 practical synthetic route.
 
 Target molecule: {target_label} ({target_smiles})
-Starting material(s): {starting_label} ({', '.join(preferred_smiles_list)})
+{starting_line}
 Maximum steps: {step_count}
 
 For each route, describe the forward synthesis step-by-step. For each step, provide:
@@ -593,7 +589,7 @@ Write the response in {lang_hint}. Use standard organic chemistry knowledge — 
 
         # Convert LLM output to planning_result route format
         converted = []
-        for rank, route in enumerate(routes[:2], start=1):
+        for rank, route in enumerate(routes[:1], start=1):  # always exactly 1 route
             steps_data = route.get("steps", [])
             if not steps_data:
                 continue
@@ -745,8 +741,8 @@ Write the response in {lang_hint}. Use standard organic chemistry knowledge — 
         # ── Assign reaction types (cache lookup + LLM fallback) ──
         self._assign_reaction_types(planning_result)
 
-        # ── Scenario C LLM fallback: if no engine route reached preferred reactants ──
-        if preferred and self._scenario_c_needs_llm_fallback(planning_result):
+        # ── Scenario B/C LLM supplement: always generate 1 LLM route ──
+        if self._is_multi_step_scenario(resolved_request):
             llm_routes = self._llm_design_routes(
                 target_smiles=resolved_request.target_smiles,
                 target_name=parsed_request.target_name or "",
@@ -758,12 +754,33 @@ Write the response in {lang_hint}. Use standard organic chemistry knowledge — 
             if llm_routes:
                 data = planning_result.setdefault("data", {})
                 existing = data.get("all_routes", [])
-                # Adjust ranks: engine routes first, LLM routes after
-                next_rank = max((r.get("route_rank", 0) for r in existing), default=0) + 1
+
+                # Tag engine routes with source
+                for r in existing:
+                    r.setdefault("source", "simpretro")
+
+                # Ensure LLM routes have source marker and default score = 3
                 for r in llm_routes:
-                    r["route_rank"] = next_rank
-                    next_rank += 1
-                data["all_routes"] = existing + llm_routes
+                    r["source"] = "llm"
+                    if r.get("route_score") is None:
+                        r["route_score"] = 3
+
+                # Ranking rule: engine(score > 3) → LLM(score = 3) → engine(score ≤ 3)
+                # Max 3 engine routes (best by score)
+                high_engine = [r for r in existing if r.get("route_score", 0) > 3]
+                low_engine = [r for r in existing if r.get("route_score", 0) <= 3]
+                # Limit total engine routes to 3
+                engine_slots = 3 - len(high_engine)
+                if engine_slots > 0:
+                    low_engine = low_engine[:engine_slots]
+                else:
+                    high_engine = high_engine[:3]
+                    low_engine = []
+                combined = high_engine + llm_routes + low_engine
+                for i, r in enumerate(combined):
+                    r["route_rank"] = i + 1
+                data["all_routes"] = combined
+
                 # Update message
                 planning_result["message"] = (
                     f"Engine found {len(existing)} route(s); "

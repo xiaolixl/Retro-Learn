@@ -212,6 +212,67 @@ def _make_target_mol_box(svg, smiles, name="", mw="", target_label="target"):
     </div>'''
 
 
+def _add_summary(parts, data, display_routes, L):
+    """Generate route-by-route summary below the route cards."""
+    all_routes = data["data"].get("all_routes", [])
+    engine_count = len(all_routes)
+    target = data["data"]["target_molecule"]
+
+    parts.append('<div class="info-box">')
+    parts.append(f'<strong>{esc(L.get("summary_title", "Route Summary"))}</strong><br><br>')
+
+    if not display_routes:
+        parts.append(esc(L["no_route"]))
+    else:
+        for i, route in enumerate(display_routes):
+            score = route.get("route_score", 0)
+            steps = route.get("steps", len(route.get("steps_history", [])))
+            source = route.get("source", "simpretro")
+            source_label = "LLM-designed" if source == "llm" else "SimpRetro"
+            rank = i + 1
+            is_best = (i == 0 and score > 0)
+            best_mark = f' ({L["best_route"]})' if is_best else ""
+
+            # Collect reaction types and conditions from steps
+            steps_hist = route.get("steps_history", [])
+            rxn_types = []
+            conditions = []
+            for step in reversed(steps_hist):
+                rt = step.get("reaction_type", "")
+                if rt and rt not in rxn_types:
+                    rxn_types.append(rt)
+                cond = _dedup_conditions(step.get("reaction_condition", []))
+                if cond:
+                    conditions.append(cond)
+
+            parts.append(f'<b>{source_label} {L["route"]} {rank}{best_mark} '
+                        f'({L["score"]}: {score:.2f}, {steps} {L.get("steps_suffix", "step(s)")})</b><br>')
+
+            parts.append(f'{len(steps_hist)} {L.get("step_label", "forward steps")}. ')
+
+            if conditions:
+                parts.append(f'{L.get("key_reactions", "Key reactions")}: {" → ".join(esc(c) for c in conditions)}. ')
+
+            if rxn_types:
+                parts.append(f'{L.get("rxn_types_label", "Reaction types")}: {", ".join(esc(t) for t in rxn_types)}. ')
+
+            # Leaf reactants stock
+            leaves = route.get("leaf_reactants", [])
+            if leaves:
+                in_stock = [l for l in leaves if l.get("in_stock")]
+                parts.append(f'{len(in_stock)}/{len(leaves)} {L.get("stock_suffix", "leaf reactant(s) in stock")}.')
+
+            parts.append('<br><br>')
+
+    # Footer line
+    parts.append('<span style="font-size:10px;color:#888">')
+    parts.append(f'{L.get("target_label", "Target")}: {esc(target["smiles"])} · MW: {esc(str(target.get("molecular_weight", "")))}')
+    if engine_count > 0:
+        parts.append(f' · {L.get("engine_label", "Engine")}: {engine_count} {L.get("total_routes", "route(s)")}')
+    parts.append('</span>')
+    parts.append('</div>')
+
+
 def generate_flowchart_html(data, output_path, lang="en"):
     """Generate a flowchart-style HTML visualization with forward-direction single-arrow layout."""
     # Language-specific labels
@@ -323,6 +384,9 @@ def generate_flowchart_html(data, output_path, lang="en"):
     parts.append('')
     parts.append('  .info-line { font-size: 11px; color: #555; margin-top: 6px; line-height: 1.6; }')
     parts.append('  .footer { font-size: 11px; color: #999; text-align: center; margin-top: 20px; padding: 12px; border-top: 1px solid #eee; }')
+    parts.append('  .info-box { background: #EEEDFE; border: 1.5px solid #534AB7; border-radius: 10px; padding: 14px 18px; margin-top: 16px; font-size: 12px; line-height: 1.8; }')
+    parts.append('  .source-sr { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 9px; font-weight: 500; color: #4338CA; background: #e8e6ff; border: 1px solid #534AB7; }')
+    parts.append('  .source-llm { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 9px; font-weight: 500; color: #856404; background: #fff3cd; border: 1px solid #ffc107; }')
     parts.append('')
     parts.append('  /* Target molecule distinctive styling */')
     parts.append('  .mol-target { position: relative; }')
@@ -338,8 +402,11 @@ def generate_flowchart_html(data, output_path, lang="en"):
     parts.append(f'  {_make_target_mol_box(target_svg, target["smiles"], target_name, str(target_mw), target_label=L["target"])}')
     parts.append(f'</div>')
 
+    display_routes = []  # populated below, used by _add_summary
+
     if mode == "single_step":
         routes = data["data"].get("retrosynthesis_routes", [])
+        display_routes = routes
         for route in routes:
             rank = route["route_rank"]
             score = route["score"]
@@ -352,9 +419,16 @@ def generate_flowchart_html(data, output_path, lang="en"):
             parts.append(f'<div class="route-card {card_cls}">')
             parts.append(f'  <div class="route-header">')
             parts.append(f'    <span class="route-badge">{esc(L["route"])} {rank}</span>')
-            parts.append(f'    <span class="route-score">{esc(L["score"])}: {score:.4f}</span>')
             if is_best:
                 parts.append(f'    <span class="best-tag">Best</span>')
+            source = route.get("source", "")
+            if source == "llm":
+                parts.append(f'    <span class="source-llm">LLM-designed</span>')
+            elif source:
+                parts.append(f'    <span class="source-sr">SimpRetro</span>')
+            else:
+                parts.append(f'    <span class="source-sr">SimpRetro</span>')
+            parts.append(f'    <span class="route-score">{esc(L["score"])}: {score:.4f}</span>')
             parts.append(f'  </div>')
             parts.append(f'  <div class="step">')
 
@@ -389,13 +463,33 @@ def generate_flowchart_html(data, output_path, lang="en"):
                 "steps_history": recommended.get("steps", []),
             }]
 
+        # Routes already sorted by agent_runtime: engine(>3) → LLM → engine(≤3)
+        # Show up to 3 engine routes + all LLM routes
+        display_routes = all_routes[:]
+        # Cap engine routes at 3 (LLM routes are always shown)
+        engine_count = 0
+        capped = []
+        for r in display_routes:
+            if r.get("source") == "llm":
+                capped.append(r)
+            elif engine_count < 3:
+                capped.append(r)
+                engine_count += 1
+        display_routes = capped
+
+        # Find best route (highest score) among displayed
+        best_score = max((r.get("route_score", 0) for r in display_routes), default=0)
+
         shown = 0
-        for route in all_routes[:3]:
+        for route in display_routes:
             steps_history = route.get("steps_history", [])
-            rank = route.get("route_rank", shown + 1)
+            rank = shown + 1
             score = route.get("route_score", 0)
             step_count = route.get("steps", len(steps_history))
-            is_best = rank == 1 and score > 0
+            source = route.get("source", "simpretro")
+            is_best = (score == best_score and score > 0 and best_score > 0
+                        and not any(r.get("route_score", 0) == best_score
+                                    for r in display_routes[:shown]))
             card_cls = "route-best" if is_best else "route-normal"
 
             chain_parts = []
@@ -462,11 +556,15 @@ def generate_flowchart_html(data, output_path, lang="en"):
             parts.append(f'<div class="route-card {card_cls}">')
             parts.append(f'  <div class="route-header">')
             parts.append(f'    <span class="route-badge">{esc(badge_text)}</span>')
-            parts.append(f'    <span class="route-score">{esc(L["score"])}: {score:.4f} · {step_count} {esc(L["steps_suffix"])}</span>')
-            if route_source:
-                parts.append(f'    <span class="source-tag">{esc(route_source)}</span>')
             if is_best:
                 parts.append(f'    <span class="best-tag">Best</span>')
+            if route_source == "llm":
+                parts.append(f'    <span class="source-llm">LLM-designed</span>')
+            elif route_source:
+                parts.append(f'    <span class="source-sr">SimpRetro</span>')
+            else:
+                parts.append(f'    <span class="source-sr">SimpRetro</span>')
+            parts.append(f'    <span class="route-score">{esc(L["score"])}: {score:.4f} · {step_count} {esc(L["steps_suffix"])}</span>')
             parts.append(f'  </div>')
             parts.append(f'  <div class="step-chain">')
             parts.append(f'    {" ".join(chain_parts)}')
@@ -476,6 +574,9 @@ def generate_flowchart_html(data, output_path, lang="en"):
 
         if shown == 0:
             parts.append(f'<p style="color:#888;text-align:center;margin-top:24px;">{esc(L["no_route"])}</p>')
+
+    # ---- Summary section ----
+    _add_summary(parts, data, display_routes, L)
 
     parts.append(f'<div class="footer">{esc(L["footer"])}</div>')
     parts.append('</body></html>')

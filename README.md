@@ -23,7 +23,7 @@ Retro-Learn/
 |   +-- engine/                     # Engine adapter used by the skill
 |   +-- scripts/
 |
-+-- retro-agent/                    # FastAPI + LLM web agent
++-- retro-learn-agent/                    # FastAPI + LLM web agent
     +-- retro-agent_README.md
     +-- ......    
 
@@ -91,7 +91,7 @@ In the chatbox of the AI agent with the SKILL installed, type:
 The agent will invoke the underlying retrosynthesis engine with the guideline written in SKILL.md. 
 
 
-### 3. retro-agent: 
+### 3. retro-learn-agent: 
 
 `retro-agent` is the agent application layer built on top of `SimpRetro4Learn`. It includes backend workflow scripts and an HTML frontend. It requires an OpenAI-compatible API key because it uses an external LLM to parse natural-language requests. The web UI provides user-friendly interface and result display. A demo page has been set up by the development team:  http://49.232.19.102/ (This demopage uses DeepSeek API)
 

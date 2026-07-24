@@ -3,7 +3,7 @@
 Retro-Learn provides compuper- and LLM- assisted retrosynthetic route planning tools.  
 - `SimpRetro4Learn` provides template-based retrosynthesis engine, whose reaction templates are customized for university-level organic chemistry and educational use.
 - `retro-learn-skill` contains an AI agent-compatible SKILL and helper scripts that enable an agent to call SimpRetro engine and perform retrosynthetic route planning and results visualization automatically. 
-- `retro-learn-agent` is the web agent layer that connects users with SimpRetro engine through a large language model. It interprets natural-language requests, invokes the underlying engine, and presents synthesis routes and explanations in a user-friendly format. A demo page page: http://49.232.19.102/ 
+- `retro-agent` is the web agent layer that connects users with SimpRetro engine through a large language model. It interprets natural-language requests, invokes the underlying engine, and presents synthesis routes and explanations in a user-friendly format. A demo page page: http://49.232.19.102/ 
 ---
 
 ## Repository Structure
@@ -23,7 +23,7 @@ Retro-Learn/
 |   +-- engine/                     # Engine adapter used by the skill
 |   +-- scripts/
 |
-+-- retro-learn-agent/                    # FastAPI + LLM web agent
++-- retro-agent/                    # FastAPI + LLM web agent
     +-- retro-agent_README.md
     +-- ......    
 
@@ -34,7 +34,7 @@ Retro-Learn/
 |------------|---------|---------|
 | [SimpRetro4Learn](https://github.com/wzhstat/SimpRetro4Learn) | Retrosynthesis engine (pure algorithm, no LLM) | Can be used as a stand-alone package without AI |
 | [retro-learn-skill](https://github.com/xiaolixl/retro-Learn-skill) | AI-agent skill layer + helper scripts  | Works with AI agent (e.g., Codex, Claude Code, WorkBuddy) to automate workflow |
-| [retro-learn-agent](https://github.com/xiaolixl/retro-agent) | Web agent layer (FastAPI + LLM + browser UI) | Requires API KEY, can be used as a web service |
+| [retro-agent](https://github.com/xiaolixl/retro-agent) | Web agent layer (FastAPI + LLM + browser UI) | Requires API KEY, can be used as a web service |
 ---
 
 ## Quick Start
@@ -91,7 +91,7 @@ In the chatbox of the AI agent with the SKILL installed, type:
 The agent will invoke the underlying retrosynthesis engine with the guideline written in SKILL.md. 
 
 
-### 3. retro-learn-agent: 
+### 3. retro-agent: 
 
 `retro-agent` is the agent application layer built on top of `SimpRetro4Learn`. It includes backend workflow scripts and an HTML frontend. It requires an OpenAI-compatible API key because it uses an external LLM to parse natural-language requests. The web UI provides user-friendly interface and result display. A demo page has been set up by the development team:  http://49.232.19.102/ (This demopage uses DeepSeek API)
 

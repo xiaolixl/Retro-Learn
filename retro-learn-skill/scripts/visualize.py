@@ -175,15 +175,15 @@ def _make_target_mol_box(svg, smiles, name="", mw=""):
 
 
 def _sort_routes_with_llm(engine_routes, llm_routes, max_engine=3):
-    """Sort routes: engine(score>3) → LLM(score=3) → engine(score≤3).
+    """Sort routes: engine(score>4) → LLM → engine(score≤4).
 
-    LLM-designed routes default to score=3 if not specified.
-    Limits engine routes to max_engine (default 3) — keeps all >3, fills
-    remaining slots with best ≤3 routes.
+    Retro-Learn+LLM designed routes default to score=4 if not specified.
+    Limits engine routes to max_engine (default 3) — keeps all >4, fills
+    remaining slots with best ≤4 routes.
     Re-numbers route_rank after sorting.
     """
-    high = [r for r in engine_routes if r.get("route_score", 0) > 3]
-    low = [r for r in engine_routes if r.get("route_score", 0) <= 3]
+    high = [r for r in engine_routes if r.get("route_score", 0) > 4]
+    low = [r for r in engine_routes if r.get("route_score", 0) <= 4]
 
     # Limit total engine routes to max_engine
     engine_slots_remaining = max_engine - len(high)
@@ -198,7 +198,7 @@ def _sort_routes_with_llm(engine_routes, llm_routes, max_engine=3):
     for r in llm_routes:
         r.setdefault("source", "llm")
         if r.get("route_score") is None:
-            r["route_score"] = 3
+            r["route_score"] = 4
 
     merged = high + llm_routes + low
     for i, route in enumerate(merged):
@@ -227,7 +227,7 @@ def _add_summary(parts, data, llm_routes, display_routes):
             score = route.get("route_score", 0)
             steps = route.get("steps", len(route.get("steps_history", [])))
             source = route.get("source", "simpretro")
-            source_label = "LLM-designed" if source == "llm" else "SimpRetro"
+            source_label = "Retro-Learn+LLM designed" if source == "llm" else "Retro-Learn"
             is_best = (i == 0 and score > 0)
             best_mark = " (Best)" if is_best else ""
 
@@ -243,8 +243,12 @@ def _add_summary(parts, data, llm_routes, display_routes):
                 if cond:
                     conditions.append(cond)
 
-            parts.append(f'<b>{source_label} Route {route.get("route_rank", i + 1)}{best_mark} '
-                        f'(score={score:.2f}, {steps} step(s))</b><br>')
+            if source == "llm":
+                parts.append(f'<b>{source_label} Route {route.get("route_rank", i + 1)}{best_mark} '
+                            f'({steps} step(s))</b><br>')
+            else:
+                parts.append(f'<b>{source_label} Route {route.get("route_rank", i + 1)}{best_mark} '
+                            f'(score={score:.2f}, {steps} step(s))</b><br>')
 
             # Describe the route
             parts.append(f'{len(steps_hist)} forward steps. ')
@@ -289,7 +293,7 @@ def generate_flowchart_html(data, output_path, llm_routes=None):
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>SimpRetro Retrosynthesis Result</title>
+<title>Retro-Learn Retrosynthesis Result</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, 'Segoe UI', sans-serif; background: #f8f8f6; color: #2c2c2a; padding: 24px; max-width: 850px; margin: 0 auto; }
@@ -403,7 +407,7 @@ def generate_flowchart_html(data, output_path, llm_routes=None):
             rxn_label = classify_reaction(route.get("reaction_template", ""), route.get("reaction_condition", []), route.get("reaction_type"))
             rxn_cls = _rxn_type_class(rxn_label)
 
-            source_badge = '<span class="source-llm">LLM-designed</span>' if source == "llm" else '<span class="source-sr">SimpRetro</span>'
+            source_badge = '<span class="source-llm">Retro-Learn+LLM designed</span>' if source == "llm" else '<span class="source-sr">Retro-Learn</span>'
 
             parts.append(f'<div class="route-card {card_cls}">')
             parts.append(f'  <div class="route-header">')
@@ -411,7 +415,10 @@ def generate_flowchart_html(data, output_path, llm_routes=None):
             if is_best:
                 parts.append(f'    <span class="best-tag">Best</span>')
             parts.append(f'    {source_badge}')
-            parts.append(f'    <span class="route-score">Score: {score:.4f}</span>')
+            if source == "llm":
+                parts.append(f'    <span class="route-score"></span>')
+            else:
+                parts.append(f'    <span class="route-score">Score: {score:.4f}</span>')
             parts.append(f'  </div>')
             parts.append(f'  <div class="step">')
 
@@ -531,14 +538,17 @@ def generate_flowchart_html(data, output_path, llm_routes=None):
 
             badge_text = "Best Route" if is_best else f"Route {rank}"
             source = route.get("source", "simpretro")
-            source_badge = '<span class="source-llm">LLM-designed</span>' if source == "llm" else '<span class="source-sr">SimpRetro</span>'
+            source_badge = '<span class="source-llm">Retro-Learn+LLM designed</span>' if source == "llm" else '<span class="source-sr">Retro-Learn</span>'
             parts.append(f'<div class="route-card {card_cls}">')
             parts.append(f'  <div class="route-header">')
             parts.append(f'    <span class="route-badge">{badge_text}</span>')
             if is_best:
                 parts.append(f'    <span class="best-tag">Best</span>')
             parts.append(f'    {source_badge}')
-            parts.append(f'    <span class="route-score">Score: {score:.4f} · {step_count} step(s)</span>')
+            if source == "llm":
+                parts.append(f'    <span class="route-score">{step_count} step(s)</span>')
+            else:
+                parts.append(f'    <span class="route-score">Score: {score:.4f} · {step_count} step(s)</span>')
             parts.append(f'  </div>')
             parts.append(f'  <div class="step-chain">')
             parts.append(f'    {" ".join(chain_parts)}')
@@ -552,7 +562,7 @@ def generate_flowchart_html(data, output_path, llm_routes=None):
     # ---- Summary section ----
     _add_summary(parts, data, llm_routes, display_routes)
 
-    parts.append('<div class="footer">This result is a heuristic suggestion, not an experimentally validated protocol. SimpRetro Retrosynthesis Engine</div>')
+    parts.append('<div class="footer">This result is a heuristic suggestion, not an experimentally validated protocol. Retro-Learn Retrosynthesis Engine</div>')
     parts.append('</body></html>')
 
     html = "\n".join(parts)

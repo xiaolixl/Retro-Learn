@@ -465,7 +465,7 @@ HTML_TPL = """<!DOCTYPE html>
 <div class="svg-wrap">
 {svg_content}
 </div>
-<div class="footer">SimpRetro Retrosynthesis Engine — heuristic suggestions, not experimentally validated.</div>
+<div class="footer">Retro-Learn Retrosynthesis Engine — heuristic suggestions, not experimentally validated.</div>
 </body>
 </html>"""
 

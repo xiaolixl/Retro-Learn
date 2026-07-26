@@ -3,7 +3,7 @@
 Retro-Learn provides compuper- and LLM- assisted retrosynthetic route planning tools.  
 - `SimpRetro4Learn` provides template-based retrosynthesis engine, whose reaction templates are customized for university-level organic chemistry and educational use.
 - `retro-learn-skill` contains an AI agent-compatible SKILL and helper scripts that enable an agent to call SimpRetro engine and perform retrosynthetic route planning and results visualization automatically. 
-- `retro-agent` is the web agent layer that connects users with SimpRetro engine through a large language model. It interprets natural-language requests, invokes the underlying engine, and presents synthesis routes and explanations in a user-friendly format. A demo page page: http://49.232.19.102/ 
+- `retro-agent` is the web agent layer that connects users with SimpRetro engine through a large language model. It interprets natural-language requests, invokes the underlying engine, and presents synthesis routes and explanations in a user-friendly format. A demo page page: http://retro-learn.chemcognitive.online/ 
 ---
 
 ## Repository Structure

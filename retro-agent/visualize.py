@@ -228,7 +228,7 @@ def _add_summary(parts, data, display_routes, L):
             score = route.get("route_score", 0)
             steps = route.get("steps", len(route.get("steps_history", [])))
             source = route.get("source", "simpretro")
-            source_label = "LLM-designed" if source == "llm" else "SimpRetro"
+            source_label = "Retro-Learn+LLM designed" if source == "llm" else "Retro-Learn"
             rank = i + 1
             is_best = (i == 0 and score > 0)
             best_mark = f' ({L["best_route"]})' if is_best else ""
@@ -245,8 +245,12 @@ def _add_summary(parts, data, display_routes, L):
                 if cond:
                     conditions.append(cond)
 
-            parts.append(f'<b>{source_label} {L["route"]} {rank}{best_mark} '
-                        f'({L["score"]}: {score:.2f}, {steps} {L.get("steps_suffix", "step(s)")})</b><br>')
+            if source == "llm":
+                parts.append(f'<b>{source_label} {L["route"]} {rank}{best_mark} '
+                            f'({steps} {L.get("steps_suffix", "step(s)")})</b><br>')
+            else:
+                parts.append(f'<b>{source_label} {L["route"]} {rank}{best_mark} '
+                            f'({L["score"]}: {score:.2f}, {steps} {L.get("steps_suffix", "step(s)")})</b><br>')
 
             parts.append(f'{len(steps_hist)} {L.get("step_label", "forward steps")}. ')
 
@@ -286,7 +290,7 @@ def generate_flowchart_html(data, output_path, lang="en"):
             "target": "target",
             "in_stock": "In Stock",
             "steps_suffix": "step(s)",
-            "footer": "This result is a heuristic suggestion, not an experimentally validated protocol. SimpRetro Retrosynthesis Engine",
+            "footer": "This result is a heuristic suggestion, not an experimentally validated protocol. Retro-Learn Retrosynthesis Engine",
             "no_route": "No viable route found.",
         },
         "zh": {
@@ -298,7 +302,7 @@ def generate_flowchart_html(data, output_path, lang="en"):
             "target": "目标",
             "in_stock": "有库存",
             "steps_suffix": "步",
-            "footer": "以上路线为计算辅助建议，未经实验验证。SimpRetro 逆合成引擎",
+            "footer": "以上路线为计算辅助建议，未经实验验证。Retro-Learn 逆合成引擎",
             "no_route": "未找到可行路线。",
         },
     }
@@ -316,7 +320,7 @@ def generate_flowchart_html(data, output_path, lang="en"):
     # --- HTML header + CSS (plain string, no f-string!) ---
     parts.append(f'<!DOCTYPE html>\n<html lang="{lang}">\n<head>')
     parts.append('<meta charset="UTF-8">')
-    parts.append('<title>SimpRetro Retrosynthesis Result</title>')
+    parts.append('<title>Retro-Learn Retrosynthesis Result</title>')
     parts.append('<style>')
     parts.append('  * { margin: 0; padding: 0; box-sizing: border-box; }')
     parts.append("  body { font-family: -apple-system, 'Segoe UI', sans-serif; background: #f8f8f6; color: #2c2c2a; padding: 24px; max-width: 850px; margin: 0 auto; }")
@@ -423,12 +427,15 @@ def generate_flowchart_html(data, output_path, lang="en"):
                 parts.append(f'    <span class="best-tag">Best</span>')
             source = route.get("source", "")
             if source == "llm":
-                parts.append(f'    <span class="source-llm">LLM-designed</span>')
+                parts.append(f'    <span class="source-llm">Retro-Learn+LLM designed</span>')
             elif source:
-                parts.append(f'    <span class="source-sr">SimpRetro</span>')
+                parts.append(f'    <span class="source-sr">Retro-Learn</span>')
             else:
-                parts.append(f'    <span class="source-sr">SimpRetro</span>')
-            parts.append(f'    <span class="route-score">{esc(L["score"])}: {score:.4f}</span>')
+                parts.append(f'    <span class="source-sr">Retro-Learn</span>')
+            if source == "llm":
+                parts.append(f'    <span class="route-score"></span>')
+            else:
+                parts.append(f'    <span class="route-score">{esc(L["score"])}: {score:.4f}</span>')
             parts.append(f'  </div>')
             parts.append(f'  <div class="step">')
 
@@ -559,12 +566,15 @@ def generate_flowchart_html(data, output_path, lang="en"):
             if is_best:
                 parts.append(f'    <span class="best-tag">Best</span>')
             if route_source == "llm":
-                parts.append(f'    <span class="source-llm">LLM-designed</span>')
+                parts.append(f'    <span class="source-llm">Retro-Learn+LLM designed</span>')
             elif route_source:
-                parts.append(f'    <span class="source-sr">SimpRetro</span>')
+                parts.append(f'    <span class="source-sr">Retro-Learn</span>')
             else:
-                parts.append(f'    <span class="source-sr">SimpRetro</span>')
-            parts.append(f'    <span class="route-score">{esc(L["score"])}: {score:.4f} · {step_count} {esc(L["steps_suffix"])}</span>')
+                parts.append(f'    <span class="source-sr">Retro-Learn</span>')
+            if route_source == "llm":
+                parts.append(f'    <span class="route-score">{step_count} {esc(L["steps_suffix"])}</span>')
+            else:
+                parts.append(f'    <span class="route-score">{esc(L["score"])}: {score:.4f} · {step_count} {esc(L["steps_suffix"])}</span>')
             parts.append(f'  </div>')
             parts.append(f'  <div class="step-chain">')
             parts.append(f'    {" ".join(chain_parts)}')

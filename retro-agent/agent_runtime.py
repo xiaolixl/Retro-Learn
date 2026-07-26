@@ -533,7 +533,7 @@ Reaction steps:
     def _llm_design_routes(self, target_smiles: str, target_name: str,
                            preferred_smiles_list: list, preferred_names: list,
                            step_count: int, language: str) -> list:
-        """LLM-designed synthetic routes (always called for Scenario B/C).
+        """Retro-Learn+LLM designed synthetic routes (always called for Scenario B/C).
 
         Returns a list of route dicts compatible with planning_result['data']['all_routes'].
         """
@@ -641,7 +641,7 @@ Write the response in {lang_hint}. Use standard organic chemistry knowledge — 
                 "route_rank": rank + 900,
                 "route_score": 0,
                 "steps": len(steps_data),
-                "source": "LLM-designed",
+                "source": "Retro-Learn+LLM designed",
                 "leaf_reactants": leaf_reactants,
                 "steps_history": steps_history,
             })
@@ -759,16 +759,16 @@ Write the response in {lang_hint}. Use standard organic chemistry knowledge — 
                 for r in existing:
                     r.setdefault("source", "simpretro")
 
-                # Ensure LLM routes have source marker and default score = 3
+                # Ensure LLM routes have source marker and default score = 4
                 for r in llm_routes:
                     r["source"] = "llm"
                     if r.get("route_score") is None:
-                        r["route_score"] = 3
+                        r["route_score"] = 4
 
-                # Ranking rule: engine(score > 3) → LLM(score = 3) → engine(score ≤ 3)
+                # Ranking rule: engine(score > 4) → LLM → engine(score ≤ 4)
                 # Max 3 engine routes (best by score)
-                high_engine = [r for r in existing if r.get("route_score", 0) > 3]
-                low_engine = [r for r in existing if r.get("route_score", 0) <= 3]
+                high_engine = [r for r in existing if r.get("route_score", 0) > 4]
+                low_engine = [r for r in existing if r.get("route_score", 0) <= 4]
                 # Limit total engine routes to 3
                 engine_slots = 3 - len(high_engine)
                 if engine_slots > 0:

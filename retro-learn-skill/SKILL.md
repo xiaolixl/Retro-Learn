@@ -114,10 +114,10 @@ Full mapping: 1–6 carbons → `emol_under_{N}_carbons`.
 
 | Display order |
 |---------------|
-| Engine routes (score > 3) → LLM routes (score = 3) → Engine routes (score ≤ 3) |
+| Engine routes (score > 4) → LLM routes → Engine routes (score ≤ 4) |
 | No engine routes → LLM routes only (1 for B, 1–2 for C) |
 
-> LLM-designed routes default to score = 3. Engine routes are split into "high" (> 3) and "low" (≤ 3) groups.
+> Retro-Learn+LLM designed routes default to score = 4 (score hidden in display). Engine routes are split into "high" (> 4) and "low" (≤ 4) groups.
 > Max 3 engine routes displayed (best by score). All LLM routes are always shown.
 > visualize.py accepts `--llm-json <file>` to inject LLM routes and applies this sorting + cap automatically.
 
@@ -150,11 +150,11 @@ python retro-learn-skill/scripts/visualize.py retro_result.json -o build_target_
 python retro-learn-skill/scripts/tree_view.py retro_result.json -o build_target_tree.html
 ```
 
-Produces HTML with: target molecule SVG + SMILES + MW, forward-direction layout (reactants → arrow → product), single-arrow format (conditions above, reaction type below), ~60% scaled SVGs, color-coded reaction type labels, source badges (SimpRetro/LLM-designed), and automatic **Route Summary** box describing each route's synthetic strategy.
+Produces HTML with: target molecule SVG + SMILES + MW, forward-direction layout (reactants → arrow → product), single-arrow format (conditions above, reaction type below), ~60% scaled SVGs, color-coded reaction type labels, source badges (Retro-Learn/Retro-Learn+LLM designed), and automatic **Route Summary** box describing each route's synthetic strategy.
 
 **LLM route JSON format** (for `--llm-json`):
 ```json
-[{"source": "llm", "route_score": 3, "steps": N, "leaf_reactants": [...], "steps_history": [...]}]
+[{"source": "llm", "route_score": 4, "steps": N, "leaf_reactants": [...], "steps_history": [...]}]
 ```
 
 **Multi-step rendering**: For multi-step routes, `visualize.py` renders each forward step as a vertical stack of rows. Each step shows ALL reactants from `expanded_smiles` (with `+` separators for multi-reactant steps) → arrow with conditions → product. Steps are labeled "Step 1", "Step 2", etc. Max 3 engine routes displayed; all LLM routes shown.
